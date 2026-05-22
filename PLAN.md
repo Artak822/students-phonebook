@@ -85,32 +85,32 @@
 
 ### Backend
 
-- [ ] `admins/models.py` — SQLAlchemy `Admin` (все поля из схемы, `ondelete="RESTRICT"` для `role_id`)
-- [ ] `admins/schemas.py` — AdminCreate, AdminUpdate, AdminRead, AdminListResponse, GeneratedPasswordResponse
-- [ ] `admins/service.py`:
+- [x] `admins/models.py` — SQLAlchemy `Admin` (все поля из схемы, `ondelete="RESTRICT"` для `role_id`)
+- [x] `admins/schemas.py` — AdminCreate, AdminUpdate, AdminRead, AdminListResponse, GeneratedPasswordResponse
+- [x] `admins/service.py`:
   - create: генерация 16-символьного пароля, `password_changed=False`
   - update: PATCH отдельных полей
   - delete: запрет `SELF_DELETE_FORBIDDEN`, запрет `LAST_SUPER_ADMIN`
   - reset_password: генерация нового пароля, инвалидация всех refresh
-- [ ] `admins/router.py` — `GET/POST /api/admins`, `GET/PATCH/DELETE /api/admins/{id}`, `POST /api/admins/{id}/reset-password`; все за `admins:manage`
-- [ ] Audit-события: `admin.created`, `admin.deleted`, `admin.password_reset`, `admin.role_changed`
-- [ ] `roles/models.py` — SQLAlchemy `Role`
-- [ ] `roles/schemas.py` — RoleCreate, RoleUpdate, RoleRead
-- [ ] `roles/service.py` — CRUD; запрет PATCH/DELETE на `is_system=True` (`IS_SYSTEM_ROLE`)
-- [ ] `roles/router.py` — `GET/POST /api/roles`, `GET/PATCH/DELETE /api/roles/{id}`; за `roles:manage`
-- [ ] Audit-события: `role.created`, `role.updated`, `role.deleted`, `role.permissions_changed` (с `details: {added, removed}`)
+- [x] `admins/router.py` — `GET/POST /api/admins`, `GET/PATCH/DELETE /api/admins/{id}`, `POST /api/admins/{id}/reset-password`; все за `admins:manage`
+- [x] Audit-события: `admin.created`, `admin.deleted`, `admin.password_reset`, `admin.role_changed`
+- [x] `roles/models.py` — SQLAlchemy `Role`
+- [x] `roles/schemas.py` — RoleCreate, RoleUpdate, RoleRead
+- [x] `roles/service.py` — CRUD; запрет PATCH/DELETE на `is_system=True` (`IS_SYSTEM_ROLE`)
+- [x] `roles/router.py` — `GET/POST /api/roles`, `GET/PATCH/DELETE /api/roles/{id}`; за `roles:manage`
+- [x] Audit-события: `role.created`, `role.updated`, `role.deleted`, `role.permissions_changed` (с `details: {added, removed}`)
 
 ### Тесты
 
-- [ ] `tests/unit/test_permissions_check.py` — проверка `require_permission` в изоляции
-- [ ] `tests/integration/test_admins.py`:
+- [x] `tests/unit/test_permissions_check.py` — проверка `require_permission` в изоляции
+- [x] `tests/integration/test_admins.py`:
   - CRUD полный сценарий
   - POST возвращает `generated_password`
   - DELETE себя → 400 `SELF_DELETE_FORBIDDEN`
   - DELETE последнего super_admin → 400 `LAST_SUPER_ADMIN`
   - reset_password → новый пароль, старые сессии инвалидированы
   - 403 для админа без `admins:manage`
-- [ ] `tests/integration/test_roles.py`:
+- [x] `tests/integration/test_roles.py`:
   - CRUD кастомных ролей
   - PATCH/DELETE системной роли → 400 `IS_SYSTEM_ROLE`
   - Изменение permissions → запись в `audit_log`
@@ -274,7 +274,7 @@
 |---|---|
 | 1 — Инфраструктура | ✅ Готов |
 | 2 — Авторизация | ✅ Готов |
-| 3 — Администраторы и роли | ⬜ Не начат |
+| 3 — Администраторы и роли | ✅ Готов |
 | 4 — Комнаты | ⬜ Не начат |
 | 5 — Студенты | ⬜ Не начат |
 | 6 — Полировка | ⬜ Не начат |
