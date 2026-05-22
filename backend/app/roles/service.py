@@ -1,8 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.audit.service import write_audit
-from app.core.errors import IsSystemRole, RoleNotFound
+from app.core.errors import IsSystemRole, RoleInUse, RoleNotFound
 from app.roles.models import Role
 
 
@@ -120,6 +120,15 @@ async def delete_role(
 
     if role.is_system:
         raise IsSystemRole()
+
+    # Import here to avoid circular import
+    from app.admins.models import Admin  # noqa: PLC0415
+
+    count_result = await db.execute(
+        select(func.count()).select_from(Admin).where(Admin.role_id == role_id)
+    )
+    if count_result.scalar_one() > 0:
+        raise RoleInUse()
 
     await write_audit(
         db,

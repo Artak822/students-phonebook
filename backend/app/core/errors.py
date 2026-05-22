@@ -101,6 +101,12 @@ class IsSystemRole(APIError):
     message = "Нельзя изменить или удалить системную роль"
 
 
+class RoleInUse(APIError):
+    code = "ROLE_IN_USE"
+    http_status = 409
+    message = "Роль назначена администраторам и не может быть удалена"
+
+
 class PhoneAlreadyExists(APIError):
     code = "PHONE_ALREADY_EXISTS"
     http_status = 409

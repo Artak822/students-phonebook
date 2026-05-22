@@ -40,7 +40,14 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
 
 export async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await apiFetch(path, init);
-  const body = await res.json();
+
+  // 204 No Content and similar empty responses — don't try to parse JSON
+  const hasBody =
+    res.status !== 204 &&
+    res.status !== 205 &&
+    (res.headers.get("content-length") ?? "1") !== "0";
+
+  const body = hasBody ? await res.json() : undefined;
   if (!res.ok) throw new HttpError(res.status, body as ApiError);
   return body as T;
 }

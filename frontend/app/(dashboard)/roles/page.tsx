@@ -109,6 +109,9 @@ export default function RolesPage() {
       qc.invalidateQueries({ queryKey: ["roles"] });
       setDeleteTarget(null);
     },
+    onError: () => {
+      // error message is shown inline in the dialog
+    },
   });
 
   // ─── Render ───────────────────────────────────────────────────────────
@@ -342,10 +345,14 @@ export default function RolesPage() {
           <div className={s.dialog}>
             <div className={s.dialogTitle}>Удалить роль?</div>
             <div className={s.dialogText}>
-              Роль <strong>{deleteTarget.label}</strong> будет удалена. Убедитесь, что ни один администратор не использует её.
+              Роль <strong>{deleteTarget.label}</strong> будет удалена без возможности восстановления.
             </div>
             {deleteMutation.isError && (
-              <div className={s.errorBanner} style={{ marginBottom: 16 }}>Не удалось удалить роль.</div>
+              <div className={s.errorBanner} style={{ marginBottom: 16 }}>
+                {deleteMutation.error instanceof HttpError && deleteMutation.error.body.code === "ROLE_IN_USE"
+                  ? "Эта роль назначена одному или нескольким администраторам. Сначала переназначьте их на другую роль."
+                  : "Не удалось удалить роль."}
+              </div>
             )}
             <div className={s.dialogActions}>
               <button className={s.btnGhost} onClick={() => { setDeleteTarget(null); deleteMutation.reset(); }}>Отмена</button>
