@@ -1,0 +1,188 @@
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[14].oneOf[7].use[3]!./components/layout/DashboardShell.module.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+.DashboardShell_root__9_igG {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── Sidebar ─────────────────────────────── */
+
+.DashboardShell_sidebar__bYkE5 {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: oklch(97.8% 0.008 258);
+  border-right: 1px solid var(--border);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.DashboardShell_brand__tjuBL {
+  padding: 20px 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.DashboardShell_brandName__jM0Xh {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.DashboardShell_brandSub___2PU6 {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+
+.DashboardShell_nav__Bvdin {
+  flex: 1 1;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.DashboardShell_navItem___2ruR {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 450;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.DashboardShell_navItem___2ruR:hover {
+  background: oklch(94% 0.010 258);
+  color: var(--text-primary);
+}
+
+.DashboardShell_navItem___2ruR.DashboardShell_active___Qzbv {
+  background: oklch(91% 0.020 264);
+  color: oklch(38% 0.145 264);
+  font-weight: 500;
+}
+
+.DashboardShell_navItem___2ruR.DashboardShell_active___Qzbv .DashboardShell_navIcon__hw6_c {
+  color: oklch(48% 0.180 264);
+}
+
+.DashboardShell_navIcon__hw6_c {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color 0.12s ease;
+}
+
+.DashboardShell_navSection__Jf71W {
+  padding: 10px 10px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ─── Sidebar footer ──────────────────────── */
+
+.DashboardShell_sidebarFooter__G6fRj {
+  padding: 12px 8px;
+  border-top: 1px solid var(--border);
+}
+
+.DashboardShell_userBlock__PLNoB {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.DashboardShell_userAvatar__FInoV {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: oklch(91% 0.020 264);
+  color: oklch(42% 0.140 264);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+.DashboardShell_userInfo__RTUhg {
+  flex: 1 1;
+  min-width: 0;
+}
+
+.DashboardShell_userName__0duhW {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.DashboardShell_userRole__cP1a4 {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.DashboardShell_logoutBtn__fhcuI {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 6px 10px;
+  margin-top: 2px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s ease, color 0.12s ease;
+  text-align: left;
+}
+
+.DashboardShell_logoutBtn__fhcuI:hover {
+  background: oklch(94% 0.010 258);
+  color: var(--error);
+}
+
+/* ─── Main content ────────────────────────── */
+
+.DashboardShell_main__47q9r {
+  flex: 1 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+

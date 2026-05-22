@@ -1,8 +1,16 @@
+import { DashboardShell } from "@/components/layout/DashboardShell";
+
 export default function DashboardPage() {
   return (
-    <div style={{ padding: "48px", fontFamily: "system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: "20px", fontWeight: 600 }}>АСПиРС — Dashboard</h1>
-      <p style={{ marginTop: "8px", color: "#666" }}>Этап 6 — будет реализован позже.</p>
-    </div>
+    <DashboardShell>
+      <div style={{ padding: "48px 40px" }}>
+        <h1 style={{ fontSize: "18px", fontWeight: 600, letterSpacing: "-0.02em", marginBottom: "6px" }}>
+          Главная
+        </h1>
+        <p style={{ fontSize: "13.5px", color: "var(--text-muted)" }}>
+          Выберите раздел в меню слева.
+        </p>
+      </div>
+    </DashboardShell>
   );
 }

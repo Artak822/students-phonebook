@@ -1,9 +1,11 @@
 import os
 
+import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 import app.models  # noqa: F401 — регистрирует все модели в Base.metadata
 from app.core.dependencies import get_db
@@ -17,7 +19,9 @@ TEST_DATABASE_URL = os.environ.get(
 )
 TEST_REDIS_URL = os.environ.get("TEST_REDIS_URL", "redis://redis_test:6379/1")
 
-test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
+# NullPool предотвращает переиспользование соединений между разными event loop-ами
+# (актуально при запуске тестов из нескольких файлов с pytest-asyncio 0.24)
+test_engine = create_async_engine(TEST_DATABASE_URL, echo=False, poolclass=NullPool)
 TestSessionLocal = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
 
 
@@ -46,7 +50,6 @@ async def db_session() -> AsyncSession:
 @pytest_asyncio.fixture
 async def redis_client() -> Redis:
     rc = Redis.from_url(TEST_REDIS_URL, decode_responses=True)
-    await rc.flushdb()
     yield rc
     await rc.flushdb()
     await rc.aclose()

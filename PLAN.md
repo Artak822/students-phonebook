@@ -50,18 +50,18 @@
 
 ### Backend
 
-- [ ] `core/security.py` — JWT encode/decode, bcrypt hash/verify
-- [ ] `core/dependencies.py` — `get_db`, `get_current_admin` (проверяет cookie + `is_active`), `require_permission("...")`
-- [ ] `auth/schemas.py` — LoginRequest, TokenResponse (с `must_change_password`), ChangePasswordRequest, MeResponse
-- [ ] `auth/service.py` — login, logout, refresh, change-password; инвалидация всех refresh при смене пароля кроме текущей сессии
-- [ ] `auth/rate_limit.py` — Redis rate limiter: 10 попыток / 5 минут на IP
-- [ ] `auth/router.py` — `POST /api/auth/login`, `POST /api/auth/logout`, `POST /api/auth/refresh`, `POST /api/auth/change-password`, `GET /api/auth/me`
-- [ ] Middleware блокировки при `password_changed=FALSE` — 403 `PASSWORD_CHANGE_REQUIRED` на все эндпоинты кроме `/auth/change-password` и `/auth/logout`
-- [ ] Запись в `audit_log`: `auth.login.success`, `auth.login.failed`, `auth.login.rate_limited`, `auth.logout`, `auth.refresh.invalid`
+- [x] `core/security.py` — JWT encode/decode, bcrypt hash/verify
+- [x] `core/dependencies.py` — `get_db`, `get_current_admin` (проверяет cookie + `is_active`), `require_permission("...")`
+- [x] `auth/schemas.py` — LoginRequest, TokenResponse (с `must_change_password`), ChangePasswordRequest, MeResponse
+- [x] `auth/service.py` — login, logout, refresh, change-password; инвалидация всех refresh при смене пароля кроме текущей сессии
+- [x] `auth/rate_limit.py` — Redis rate limiter: 10 попыток / 5 минут на IP
+- [x] `auth/router.py` — `POST /api/auth/login`, `POST /api/auth/logout`, `POST /api/auth/refresh`, `POST /api/auth/change-password`, `GET /api/auth/me`
+- [x] Middleware блокировки при `password_changed=FALSE` — 403 `PASSWORD_CHANGE_REQUIRED` на все эндпоинты кроме `/auth/change-password` и `/auth/logout`
+- [x] Запись в `audit_log`: `auth.login.success`, `auth.login.failed`, `auth.login.rate_limited`, `auth.logout`, `auth.refresh.invalid`
 
 ### Тесты
 
-- [ ] `tests/integration/test_auth.py`:
+- [x] `tests/integration/test_auth.py` — 16/16 passed:
   - login success → cookies выданы
   - login неверный пароль → 401 `INVALID_CREDENTIALS` + audit
   - rate limit → 429 `RATE_LIMIT_EXCEEDED`
@@ -73,12 +73,9 @@
 
 ### Frontend (скилл `/impeccable`)
 
-**Передать скиллу:**
-- Два экрана: `/login` и `/change-password`
-- `/login`: форма `username` + `password`, кнопка «Войти»; при `must_change_password=true` → редирект на `/change-password`; при 401 — сообщение об ошибке; при 429 — «Слишком много попыток»
-- `/change-password`: форма `old_password` + `new_password` (мин. 8 символов, не равен старому); после успеха → редирект на `/dashboard`
-- API: `POST /api/auth/login`, `POST /api/auth/change-password`; cookie управляется браузером автоматически
-- Редирект на `/login` при получении 401 на любом запросе (глобальный interceptor в TanStack Query)
+- [x] `/login` — форма username + password, обработка 401 / 429, редирект при `must_change_password=true`
+- [x] `/change-password` — форма со старым и новым паролем, валидация Zod, редирект на `/dashboard` после успеха
+- [x] Глобальный 401-interceptor в `lib/api/client.ts` → редирект на `/login`
 
 ---
 
