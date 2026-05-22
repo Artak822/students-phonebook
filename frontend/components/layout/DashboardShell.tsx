@@ -78,10 +78,13 @@ export function DashboardShell({ children }: Props) {
           )}
 
           {hasPermission(me, "rooms:view") && (
-            <span className={`${styles.navItem}`} style={{ opacity: 0.45, cursor: "default" }}>
+            <Link
+              href="/rooms"
+              className={`${styles.navItem} ${pathname.startsWith("/rooms") ? styles.active : ""}`}
+            >
               <IconDoor className={styles.navIcon} />
               Комнаты
-            </span>
+            </Link>
           )}
 
           {hasPermission(me, "history:view") && (

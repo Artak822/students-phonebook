@@ -14,6 +14,7 @@ from app.core.errors import (
 from app.auth.router import router as auth_router
 from app.admins.router import router as admins_router
 from app.roles.router import router as roles_router
+from app.rooms.router import router as rooms_router
 from app.core.logging import RequestLoggingMiddleware, configure_logging
 from app.core.middleware import ContentTypeMiddleware, PasswordChangeRequiredMiddleware
 
@@ -45,6 +46,7 @@ app.add_exception_handler(Exception, internal_error_handler)
 app.include_router(auth_router)
 app.include_router(admins_router)
 app.include_router(roles_router)
+app.include_router(rooms_router)
 
 
 @app.get("/health", tags=["system"])

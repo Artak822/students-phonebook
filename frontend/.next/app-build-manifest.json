@@ -52,6 +52,18 @@
       "static/chunks/main-app.js",
       "static/css/app/(auth)/change-password/page.css",
       "static/chunks/app/(auth)/change-password/page.js"
+    ],
+    "/(dashboard)/rooms/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/rooms/page.css",
+      "static/chunks/app/(dashboard)/rooms/page.js"
+    ],
+    "/(dashboard)/rooms/bulk-create/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/rooms/bulk-create/page.css",
+      "static/chunks/app/(dashboard)/rooms/bulk-create/page.js"
     ]
   }
 }

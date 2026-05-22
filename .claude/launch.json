@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aspirs",
+      "runtimeExecutable": "curl",
+      "runtimeArgs": ["-s", "http://localhost/rooms"],
+      "port": 80
+    }
+  ]
+}
