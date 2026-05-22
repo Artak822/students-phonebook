@@ -12,8 +12,15 @@ class Settings(BaseSettings):
     RATE_LIMIT_LOGIN: str = "10/5minutes"
     LOG_LEVEL: str = "INFO"
 
-    CORS_ORIGINS: list[str] = []
-    COOKIE_DOMAIN: str = "localhost"
+    # Хранится как строка — pydantic-settings не пытается JSON-парсить str-поля.
+    # Допустимые форматы в .env:
+    #   CORS_ORIGINS=                           ← пусто → []
+    #   CORS_ORIGINS=http://localhost:3000       ← один origin
+    #   CORS_ORIGINS=http://a.com,http://b.com  ← несколько через запятую
+    #   CORS_ORIGINS=["http://a.com"]           ← JSON-массив
+    CORS_ORIGINS: str = ""
+
+    COOKIE_DOMAIN: str = ""  # пусто = не выставлять domain attribute (браузер определит сам)
     COOKIE_SAMESITE: str = "lax"
     COOKIE_SECURE: bool = False
 
@@ -24,6 +31,19 @@ class Settings(BaseSettings):
 
     BACKUP_S3_BUCKET: str = "aspirs-backups"
     BACKUP_LOCAL_KEEP: int = 7
+
+    @property
+    def cors_origins(self) -> list[str]:
+        v = self.CORS_ORIGINS.strip()
+        if not v:
+            return []
+        if v.startswith("["):
+            import json
+            try:
+                return json.loads(v)
+            except Exception:
+                pass
+        return [s.strip() for s in v.split(",") if s.strip()]
 
 
 settings = Settings()

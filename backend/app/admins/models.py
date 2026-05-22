@@ -1,6 +1,8 @@
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, Integer, Text, text
+from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.roles.models import Role  # noqa: F401 — нужен для разрешения relationship("Role")
 
 
 class Admin(Base):
@@ -15,6 +17,8 @@ class Admin(Base):
     password_changed = Column(Boolean, nullable=False, server_default=text("false"))
     created_at = Column(DateTime(timezone=True), nullable=False, server_default=text("NOW()"))
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=text("NOW()"))
+
+    role = relationship("Role", foreign_keys=[role_id], lazy="noload")
 
     __table_args__ = (
         Index("idx_admins_username", "username"),

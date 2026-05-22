@@ -1,4 +1,15 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  async rewrites() {
+    // в Docker: http://backend:8000, локально: http://localhost:8000
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:8000";
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ];
+  },
+};
 
 module.exports = nextConfig;

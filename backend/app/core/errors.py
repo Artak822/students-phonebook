@@ -119,6 +119,12 @@ class RateLimitExceeded(APIError):
     message = "Слишком много попыток. Повторите через несколько минут"
 
 
+class SamePassword(APIError):
+    code = "SAME_PASSWORD"
+    http_status = 400
+    message = "Новый пароль должен отличаться от старого"
+
+
 class InvalidContentType(APIError):
     code = "INVALID_CONTENT_TYPE"
     http_status = 415

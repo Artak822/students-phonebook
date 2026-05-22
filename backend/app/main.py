@@ -11,8 +11,9 @@ from app.core.errors import (
     internal_error_handler,
     validation_error_handler,
 )
+from app.auth.router import router as auth_router
 from app.core.logging import RequestLoggingMiddleware, configure_logging
-from app.core.middleware import ContentTypeMiddleware
+from app.core.middleware import ContentTypeMiddleware, PasswordChangeRequiredMiddleware
 
 
 @asynccontextmanager
@@ -25,18 +26,21 @@ app = FastAPI(title="АСПиРС CRM", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE"],
     allow_headers=["Content-Type"],
     max_age=86400,
 )
+app.add_middleware(PasswordChangeRequiredMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(ContentTypeMiddleware)
 
 app.add_exception_handler(APIError, api_error_handler)
 app.add_exception_handler(RequestValidationError, validation_error_handler)
 app.add_exception_handler(Exception, internal_error_handler)
+
+app.include_router(auth_router)
 
 
 @app.get("/health", tags=["system"])

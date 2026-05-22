@@ -1,11 +1,13 @@
 import os
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+import app.models  # noqa: F401 — регистрирует все модели в Base.metadata
 from app.core.dependencies import get_db
+from app.core.redis import get_redis
 from app.database import Base
 from app.main import app
 
@@ -13,6 +15,7 @@ TEST_DATABASE_URL = os.environ.get(
     "TEST_DATABASE_URL",
     "postgresql+asyncpg://aspirs_test:aspirs_test@db_test:5432/aspirs_test",
 )
+TEST_REDIS_URL = os.environ.get("TEST_REDIS_URL", "redis://redis_test:6379/1")
 
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
 TestSessionLocal = async_sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
@@ -31,7 +34,7 @@ async def setup_database():
 async def db_session() -> AsyncSession:
     conn = await test_engine.connect()
     trans = await conn.begin()
-    session = AsyncSession(conn, expire_on_commit=False)
+    session = AsyncSession(conn, expire_on_commit=False, join_transaction_mode="create_savepoint")
     try:
         yield session
     finally:
@@ -41,13 +44,28 @@ async def db_session() -> AsyncSession:
 
 
 @pytest_asyncio.fixture
-async def client(db_session: AsyncSession) -> AsyncClient:
+async def redis_client() -> Redis:
+    rc = Redis.from_url(TEST_REDIS_URL, decode_responses=True)
+    await rc.flushdb()
+    yield rc
+    await rc.flushdb()
+    await rc.aclose()
+
+
+@pytest_asyncio.fixture
+async def client(db_session: AsyncSession, redis_client: Redis) -> AsyncClient:
     async def _override_get_db():
         yield db_session
 
+    async def _override_get_redis():
+        yield redis_client
+
     app.dependency_overrides[get_db] = _override_get_db
+    app.dependency_overrides[get_redis] = _override_get_redis
+
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
+
     app.dependency_overrides.clear()
 
 
@@ -126,6 +144,10 @@ async def tutor_admin(db_session: AsyncSession):
 
 
 @pytest_asyncio.fixture
-async def auth_client(client: AsyncClient, super_admin):
-    # Будет доработано в Этапе 2 при реализации auth endpoints
+async def auth_client(client: AsyncClient, super_admin) -> AsyncClient:
+    response = await client.post(
+        "/api/auth/login",
+        json={"username": "test_superadmin", "password": "password123"},
+    )
+    assert response.status_code == 200, response.text
     return client

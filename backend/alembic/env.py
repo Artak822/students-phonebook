@@ -18,13 +18,8 @@ if database_url:
     config.set_main_option("sqlalchemy.url", database_url)
 
 # Import all models so they register with Base.metadata
+import app.models  # noqa: E402, F401
 from app.database import Base  # noqa: E402
-import app.roles.models  # noqa: E402, F401
-import app.admins.models  # noqa: E402, F401
-import app.rooms.models  # noqa: E402, F401
-import app.groups.models  # noqa: E402, F401
-import app.employees.models  # noqa: E402, F401
-import app.audit.models  # noqa: E402, F401
 
 target_metadata = Base.metadata
 

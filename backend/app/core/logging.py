@@ -1,11 +1,9 @@
 import time
 import uuid
 from contextvars import ContextVar
-from typing import Callable
 
 import structlog
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from app.config import settings
 
@@ -53,25 +51,40 @@ def set_actor(actor_id: int | None, actor_username: str | None) -> None:
     _actor_username.set(actor_username)
 
 
-class RequestLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+class RequestLoggingMiddleware:
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
         request_id = str(uuid.uuid4())
         _request_id.set(request_id)
-        _ip.set(request.client.host if request.client else None)
+        client = scope.get("client")
+        _ip.set(client[0] if client else None)
         _actor_id.set(None)
         _actor_username.set(None)
-        request.state.request_id = request_id
+
+        scope.setdefault("state", {})
+        scope["state"]["request_id"] = request_id
 
         start = time.monotonic()
-        response = await call_next(request)
-        duration_ms = round((time.monotonic() - start) * 1000)
+        status_code = [500]
 
-        logger = structlog.get_logger()
-        logger.info(
+        async def send_wrapper(message: dict) -> None:
+            if message["type"] == "http.response.start":
+                status_code[0] = message.get("status", 500)
+            await send(message)
+
+        await self.app(scope, receive, send_wrapper)
+
+        duration_ms = round((time.monotonic() - start) * 1000)
+        structlog.get_logger().info(
             "request.completed",
-            method=request.method,
-            path=request.url.path,
-            status=response.status_code,
+            method=scope.get("method", ""),
+            path=scope.get("path", ""),
+            status=status_code[0],
             duration_ms=duration_ms,
         )
-        return response
