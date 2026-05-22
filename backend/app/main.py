@@ -1,0 +1,44 @@
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.config import settings
+from app.core.errors import (
+    APIError,
+    api_error_handler,
+    internal_error_handler,
+    validation_error_handler,
+)
+from app.core.logging import RequestLoggingMiddleware, configure_logging
+from app.core.middleware import ContentTypeMiddleware
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    configure_logging()
+    yield
+
+
+app = FastAPI(title="АСПиРС CRM", version="1.0.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Content-Type"],
+    max_age=86400,
+)
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(ContentTypeMiddleware)
+
+app.add_exception_handler(APIError, api_error_handler)
+app.add_exception_handler(RequestValidationError, validation_error_handler)
+app.add_exception_handler(Exception, internal_error_handler)
+
+
+@app.get("/health", tags=["system"])
+async def health():
+    return {"status": "ok"}
