@@ -90,8 +90,9 @@
   white-space: nowrap;
 }
 
-.table thead th:last-child {
+.colActions {
   text-align: right;
+  width: 80px;
 }
 
 .table tbody tr {
@@ -115,9 +116,6 @@
   vertical-align: middle;
 }
 
-.table tbody td:last-child {
-  text-align: right;
-}
 
 .numericCell {
   font-variant-numeric: tabular-nums;

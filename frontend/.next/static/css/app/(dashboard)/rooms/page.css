@@ -95,8 +95,9 @@
   white-space: nowrap;
 }
 
-.rooms_table__Cj3TE thead th:last-child {
+.rooms_colActions__ZnZqJ {
   text-align: right;
+  width: 80px;
 }
 
 .rooms_table__Cj3TE tbody tr {
@@ -120,9 +121,6 @@
   vertical-align: middle;
 }
 
-.rooms_table__Cj3TE tbody td:last-child {
-  text-align: right;
-}
 
 .rooms_numericCell__UDad9 {
   font-feature-settings: "tnum";

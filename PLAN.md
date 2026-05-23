@@ -139,30 +139,30 @@
 
 ### Backend
 
-- [ ] `rooms/models.py` — SQLAlchemy `Room` (CHECK constraints через `CheckConstraint`, `UniqueConstraint` на `building+entrance+room_number`)
-- [ ] `rooms/schemas.py` — RoomCreate, RoomUpdate, RoomRead, BulkCreateRequest, BulkCreateResponse
-- [ ] `rooms/service.py` — CRUD; DELETE: проверка `ROOM_HAS_STUDENTS`; bulk INSERT с проверкой дублей
-- [ ] `rooms/bulk_create.py` — парсинг строки диапазона: `1001-1020`, `1001,1002`, `1001-1010,1020-1030`, `1001-1020,!1010`
-- [ ] `rooms/router.py` — `GET/POST /api/rooms`, `POST /api/rooms/bulk`, `GET/PATCH/DELETE /api/rooms/{id}`, `GET /api/rooms/{id}/students`; за `rooms:view` / `rooms:manage`
+- [x] `rooms/models.py` — SQLAlchemy `Room` (CHECK constraints через `CheckConstraint`, `UniqueConstraint` на `building+entrance+room_number`)
+- [x] `rooms/schemas.py` — RoomCreate, RoomUpdate, RoomRead, BulkCreateRequest, BulkCreateResponse
+- [x] `rooms/service.py` — CRUD; DELETE: проверка `ROOM_HAS_STUDENTS`; bulk INSERT с проверкой дублей
+- [x] `rooms/bulk_create.py` — парсинг строки диапазона: `1001-1020`, `1001,1002`, `1001-1010,1020-1030`, `1001-1020,!1010`
+- [x] `rooms/router.py` — `GET/POST /api/rooms`, `POST /api/rooms/bulk`, `GET/PATCH/DELETE /api/rooms/{id}`, `GET /api/rooms/{id}/students`; за `rooms:view` / `rooms:manage`
 
 ### Тесты
 
-- [ ] `tests/unit/test_room_range_parser.py` — диапазоны, списки, исключения, edge cases
-- [ ] `tests/integration/test_rooms.py`:
+- [x] `tests/unit/test_room_range_parser.py` — 14 тестов: диапазоны, списки, исключения, edge cases
+- [x] `tests/integration/test_rooms.py` — 14 тестов:
   - CRUD
   - bulk-create: несколько диапазонов → правильное число комнат
   - DELETE заселённой → 400 `ROOM_HAS_STUDENTS`
   - дубль `building+entrance+room_number` → 409
 
-### Frontend (скилл `/impeccable`)
+### Frontend
 
-**Передать скиллу:**
-- Страница `/rooms`: таблица (корпус, подъезд, номер, вместимость, занято/свободно), фильтры по корпусу и подъезду; кнопки «Добавить» и «Добавить пачкой»
-- Форма создания/редактирования комнаты: корпус, подъезд, номер, вместимость (всё числа > 0)
-- Мастер `/rooms/bulk-create` — **2 шага**:
-  - Шаг 1: корпус, подъезд, поле диапазона номеров (с подсказкой форматов: `1001-1020`, `1001,1002`, `1001-1010,1020-1030`), вместимость по умолчанию; кнопка «Далее» → отправляет на `/api/rooms/bulk` preview (или парсит на клиенте)
-  - Шаг 2: редактируемая таблица — `room_number` (readonly) + `capacity` (input, предзаполнен дефолтом); кнопка «Создать всё» → `POST /api/rooms/bulk`
-- API: все эндпоинты из раздела «Комнаты» ARCHITECTURE.md
+- [x] Страница `/rooms`: таблица с клиентскими фильтрами по корпусу/подъезду, slide-in панель создания/редактирования, подтверждение удаления
+- [x] Мастер `/rooms/bulk-create`: 2 шага, клиентский парсер диапазонов, редактируемая таблица вместимостей, экран результата
+- [x] Сайдбар: «Комнаты» активировано как `<Link href="/rooms">`
+
+### Postfactum-фиксы
+
+- [x] Фильтр подъездов: переход на клиентскую фильтрацию — опции фильтров строятся из полных данных, не из уже отфильтрованного ответа сервера
 
 ---
 
@@ -281,6 +281,6 @@
 | 1 — Инфраструктура | ✅ Готов |
 | 2 — Авторизация | ✅ Готов |
 | 3 — Администраторы и роли | ✅ Готов |
-| 4 — Комнаты | ⬜ Не начат |
+| 4 — Комнаты | ✅ Готов |
 | 5 — Студенты | ⬜ Не начат |
 | 6 — Полировка | ⬜ Не начат |

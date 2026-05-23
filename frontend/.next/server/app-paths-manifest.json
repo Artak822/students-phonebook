@@ -2,8 +2,6 @@
   "/dashboard/page": "app/dashboard/page.js",
   "/(auth)/login/page": "app/(auth)/login/page.js",
   "/(auth)/change-password/page": "app/(auth)/change-password/page.js",
-  "/(dashboard)/admins/page": "app/(dashboard)/admins/page.js",
   "/(dashboard)/roles/page": "app/(dashboard)/roles/page.js",
-  "/(dashboard)/rooms/page": "app/(dashboard)/rooms/page.js",
-  "/(dashboard)/rooms/bulk-create/page": "app/(dashboard)/rooms/bulk-create/page.js"
+  "/(dashboard)/rooms/page": "app/(dashboard)/rooms/page.js"
 }

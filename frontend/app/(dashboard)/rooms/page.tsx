@@ -40,24 +40,31 @@ export default function RoomsPage() {
 
   // ─── Query ────────────────────────────────────────────────────────────
 
+  // Загружаем все комнаты без серверной фильтрации — список небольшой,
+  // клиентская фильтрация позволяет корректно строить опции фильтров.
   const roomsQuery = useQuery({
-    queryKey: ["rooms", filterBuilding, filterEntrance],
-    queryFn: () => listRooms({ building: filterBuilding, entrance: filterEntrance }),
+    queryKey: ["rooms"],
+    queryFn: () => listRooms(),
   });
 
-  const rooms = roomsQuery.data ?? [];
+  const allRooms = roomsQuery.data ?? [];
+
+  const rooms = useMemo(() => {
+    let data = allRooms;
+    if (filterBuilding) data = data.filter((r) => r.building === filterBuilding);
+    if (filterEntrance) data = data.filter((r) => r.entrance === filterEntrance);
+    return data;
+  }, [allRooms, filterBuilding, filterEntrance]);
 
   const buildings = useMemo(
-    () => Array.from(new Set((roomsQuery.data ?? []).map((r) => r.building))).sort((a, b) => a - b),
-    [roomsQuery.data]
+    () => Array.from(new Set(allRooms.map((r) => r.building))).sort((a, b) => a - b),
+    [allRooms]
   );
 
   const entrances = useMemo(() => {
-    const src = filterBuilding
-      ? (roomsQuery.data ?? []).filter((r) => r.building === filterBuilding)
-      : (roomsQuery.data ?? []);
+    const src = filterBuilding ? allRooms.filter((r) => r.building === filterBuilding) : allRooms;
     return Array.from(new Set(src.map((r) => r.entrance))).sort((a, b) => a - b);
-  }, [roomsQuery.data, filterBuilding]);
+  }, [allRooms, filterBuilding]);
 
   // ─── Form ─────────────────────────────────────────────────────────────
 
@@ -201,7 +208,7 @@ export default function RoomsPage() {
               <th>Подъезд</th>
               <th>Номер комнаты</th>
               <th>Вместимость</th>
-              {canManage && <th></th>}
+              {canManage && <th className={s.colActions}></th>}
             </tr>
           </thead>
           <tbody>
@@ -241,7 +248,7 @@ export default function RoomsPage() {
                   <td className={s.numericCell}>{room.room_number}</td>
                   <td className={s.numericCell}>{room.capacity}</td>
                   {canManage && (
-                    <td>
+                    <td className={s.colActions}>
                       <div className={s.actions}>
                         <button
                           className={s.iconBtn}
