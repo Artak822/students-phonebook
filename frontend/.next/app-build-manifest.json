@@ -1,21 +1,16 @@
 {
   "pages": {
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(dashboard)/roles/page": [
+    "/(dashboard)/students/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(dashboard)/roles/page.css",
-      "static/chunks/app/(dashboard)/roles/page.js"
+      "static/css/app/(dashboard)/students/[id]/page.css",
+      "static/chunks/app/(dashboard)/students/[id]/page.js"
     ],
     "/(dashboard)/layout": [
       "static/chunks/webpack.js",
@@ -34,36 +29,6 @@
       "static/chunks/main-app.js",
       "static/css/app/(auth)/layout.css",
       "static/chunks/app/(auth)/layout.js"
-    ],
-    "/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/dashboard/page.css",
-      "static/chunks/app/dashboard/page.js"
-    ],
-    "/(dashboard)/admins/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(dashboard)/admins/page.css",
-      "static/chunks/app/(dashboard)/admins/page.js"
-    ],
-    "/(auth)/change-password/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(auth)/change-password/page.css",
-      "static/chunks/app/(auth)/change-password/page.js"
-    ],
-    "/(dashboard)/rooms/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(dashboard)/rooms/page.css",
-      "static/chunks/app/(dashboard)/rooms/page.js"
-    ],
-    "/(dashboard)/rooms/bulk-create/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(dashboard)/rooms/bulk-create/page.css",
-      "static/chunks/app/(dashboard)/rooms/bulk-create/page.js"
     ]
   }
 }

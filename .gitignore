@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Alembic
+backend/alembic/__pycache__/
+backend/app/**/__pycache__/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker volumes / data
+postgres_data/

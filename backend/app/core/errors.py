@@ -83,6 +83,12 @@ class RoomHasStudents(APIError):
     message = "Нельзя удалить комнату, в которой есть студенты"
 
 
+class RoomFull(APIError):
+    code = "ROOM_FULL"
+    http_status = 409
+    message = "Комната заполнена"
+
+
 class LastSuperAdmin(APIError):
     code = "LAST_SUPER_ADMIN"
     http_status = 400

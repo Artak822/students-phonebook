@@ -40,6 +40,27 @@
   align-items: center;
 }
 
+.filterSearch {
+  flex: 1;
+  min-width: 180px;
+  max-width: 280px;
+  height: 34px;
+  padding: 0 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filterSearch::placeholder { color: var(--text-muted); }
+.filterSearch:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+}
+
 .filterSelect {
   height: 34px;
   padding: 0 28px 0 10px;

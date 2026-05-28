@@ -15,6 +15,8 @@ from app.auth.router import router as auth_router
 from app.admins.router import router as admins_router
 from app.roles.router import router as roles_router
 from app.rooms.router import router as rooms_router
+from app.groups.router import router as groups_router
+from app.employees.router import router as employees_router
 from app.core.logging import RequestLoggingMiddleware, configure_logging
 from app.core.middleware import ContentTypeMiddleware, PasswordChangeRequiredMiddleware
 
@@ -47,6 +49,8 @@ app.include_router(auth_router)
 app.include_router(admins_router)
 app.include_router(roles_router)
 app.include_router(rooms_router)
+app.include_router(groups_router)
+app.include_router(employees_router)
 
 
 @app.get("/health", tags=["system"])

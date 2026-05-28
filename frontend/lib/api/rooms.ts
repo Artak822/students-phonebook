@@ -45,6 +45,19 @@ export interface RoomStudent {
   id: number;
   fio: string;
   phone: string;
+  room_id: number | null;
+  group_id: number;
+  birth_date: string;
+  notes: string;
+  contacts: string;
+  photo_url: string | null;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export function getRoom(id: number): Promise<RoomRead> {
+  return apiJson<RoomRead>(`/api/rooms/${id}`);
 }
 
 export function listRooms(params?: { building?: number; entrance?: number }): Promise<RoomRead[]> {
@@ -82,4 +95,9 @@ export function bulkCreateRooms(payload: BulkCreateRequest): Promise<BulkCreateR
 
 export function getRoomStudents(id: number): Promise<RoomStudent[]> {
   return apiJson<RoomStudent[]>(`/api/rooms/${id}/students`);
+}
+
+/** Единый формат отображения комнаты: 8-1-361 */
+export function roomLabel(r: { building: number; entrance: number; room_number: number }): string {
+  return `${r.building}-${r.entrance}-${r.room_number}`;
 }

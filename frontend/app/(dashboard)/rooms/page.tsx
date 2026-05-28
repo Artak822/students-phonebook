@@ -31,6 +31,7 @@ export default function RoomsPage() {
 
   const canManage = hasPermission(me, "rooms:manage");
 
+  const [search, setSearch] = useState("");
   const [filterBuilding, setFilterBuilding] = useState<number | undefined>(undefined);
   const [filterEntrance, setFilterEntrance] = useState<number | undefined>(undefined);
   const [panel, setPanel] = useState<"create" | "edit" | null>(null);
@@ -53,8 +54,26 @@ export default function RoomsPage() {
     let data = allRooms;
     if (filterBuilding) data = data.filter((r) => r.building === filterBuilding);
     if (filterEntrance) data = data.filter((r) => r.entrance === filterEntrance);
+    if (search.trim()) {
+      const q = search.trim();
+      const digits = q.replace(/\D/g, "");
+      data = data.filter((r) => {
+        const full = `${r.building}-${r.entrance}-${r.room_number}`;
+        const compact = `${r.building}${r.entrance}${r.room_number}`;
+        // точное совпадение с компактным форматом (814361)
+        if (digits.length >= 3 && compact === digits) return true;
+        // префиксное совпадение: 81 → корп.8 подъезд 1
+        if (digits.length >= 2 && compact.startsWith(digits)) return true;
+        return (
+          full.includes(q) ||
+          String(r.room_number).includes(q) ||
+          String(r.building) === q ||
+          String(r.entrance) === q
+        );
+      });
+    }
     return data;
-  }, [allRooms, filterBuilding, filterEntrance]);
+  }, [allRooms, filterBuilding, filterEntrance, search]);
 
   const buildings = useMemo(
     () => Array.from(new Set(allRooms.map((r) => r.building))).sort((a, b) => a - b),
@@ -174,6 +193,13 @@ export default function RoomsPage() {
 
       {/* Filters */}
       <div className={s.filters}>
+        <input
+          className={s.filterSearch}
+          type="text"
+          placeholder="Поиск по номеру, корпусу, подъезду…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <select
           className={s.filterSelect}
           value={filterBuilding ?? ""}
@@ -242,7 +268,7 @@ export default function RoomsPage() {
 
             {!roomsQuery.isLoading &&
               rooms.map((room) => (
-                <tr key={room.id}>
+                <tr key={room.id} onClick={() => { window.location.href = `/rooms/${room.id}`; }} style={{ cursor: "pointer" }}>
                   <td className={s.numericCell}>{room.building}</td>
                   <td className={s.numericCell}>{room.entrance}</td>
                   <td className={s.numericCell}>{room.room_number}</td>
@@ -373,7 +399,7 @@ export default function RoomsPage() {
             <div className={s.dialogTitle}>Удалить комнату?</div>
             <div className={s.dialogText}>
               Комната <strong>
-                {deleteTarget.building}/{deleteTarget.entrance}/{deleteTarget.room_number}
+                {deleteTarget.building}-{deleteTarget.entrance}-{deleteTarget.room_number}
               </strong> будет удалена. Это действие необратимо.
             </div>
             {deleteMutation.isError && (

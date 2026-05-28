@@ -1,0 +1,748 @@
+.page {
+  padding: 32px 40px;
+  min-height: 100%;
+}
+
+.loadingState {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ─── Header ─────────────────────────────────── */
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  text-decoration: none;
+}
+.backBtn:hover { background: var(--bg); color: var(--text-secondary); }
+
+.headerMeta { flex: 1; min-width: 0; }
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ─── Layout ─────────────────────────────────── */
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+  max-width: 960px;
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ─── Section ────────────────────────────────── */
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.sectionTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitleRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.residentCount {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 8px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ─── Stat grid (view mode) ──────────────────── */
+
+.statGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Occupancy ──────────────────────────────── */
+
+.badgeFree {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 10px;
+  background: oklch(96% 0.020 155);
+  color: oklch(45% 0.155 155);
+  border: 1px solid oklch(88% 0.040 155);
+  white-space: nowrap;
+}
+
+.badgeFull {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 10px;
+  background: oklch(96% 0.018 75);
+  color: oklch(52% 0.145 75);
+  border: 1px solid oklch(90% 0.040 75);
+  white-space: nowrap;
+}
+
+.dotGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dotOccupied {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: oklch(54% 0.155 264);
+  flex-shrink: 0;
+}
+
+.dotFree {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+}
+
+.occupancyMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.occupancyMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.occupancyMetaDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+}
+.occupancyMetaDot[data-occupied="true"] {
+  background: oklch(54% 0.155 264);
+  border-color: oklch(54% 0.155 264);
+}
+
+.occupancyMetaSep {
+  color: var(--border);
+  font-size: 12px;
+}
+
+/* ─── Edit fields ────────────────────────────── */
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+.input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+}
+.inputError { border-color: var(--border-error) !important; }
+
+.fieldError { font-size: 12px; color: var(--error); }
+
+/* ─── Add resident button ────────────────────────── */
+
+.btnAddResident {
+  height: 28px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+}
+.btnAddResident:hover { background: var(--bg); color: var(--text-primary); }
+
+/* ─── Residents list ─────────────────────────── */
+
+.residentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.residentRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  margin: 0 -20px;
+  padding: 0 12px 0 20px;
+  transition: background 0.1s;
+}
+.residentRow:last-child { border-bottom: none; }
+.residentRow:hover { background: var(--bg); }
+.residentRow:hover .residentActions { opacity: 1; }
+
+.residentLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  padding: 10px 0;
+}
+
+.residentActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.12s;
+  flex-shrink: 0;
+}
+
+.residentActionBtn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  flex-shrink: 0;
+}
+.residentActionBtn:hover { background: oklch(93% 0.005 264); color: var(--text-secondary); }
+.residentActionBtnDanger:hover { background: var(--error-bg); color: var(--error); }
+
+.residentAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.residentAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.residentAvatarInitial {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  position: absolute;
+}
+
+.residentInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.residentName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.residentPhone {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.residentArrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.emptyResidents {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+
+/* ─── Skeleton ───────────────────────────────── */
+
+.residentSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.residentSkeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skeletonCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.skeletonLine {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--border);
+  flex: 1;
+  max-width: 200px;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─── Add resident inline ────────────────────── */
+
+.addResidentBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.addError {
+  font-size: 12.5px;
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid var(--border-error);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+}
+
+.addSearchWrap {
+  position: relative;
+}
+
+.addSearchInput {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.addSearchInput:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+}
+
+.addDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px oklch(0% 0 0 / 0.10);
+  z-index: 40;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.addDropdownMsg {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.addDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s;
+  font-family: inherit;
+}
+.addDropdownItem:hover:not(:disabled) { background: var(--bg); }
+.addDropdownItem:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.addDropdownAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.addDropdownAvatarImg { width: 100%; height: 100%; object-fit: cover; }
+.addDropdownAvatarInitial { font-size: 12px; font-weight: 600; color: var(--text-muted); position: absolute; }
+
+.addDropdownInfo { flex: 1; min-width: 0; }
+.addDropdownName { font-size: 13.5px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addDropdownSub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.addDropdownCurrentRoom { color: oklch(52% 0.145 75); }
+
+.addActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ─── Transfer room picker ───────────────────── */
+
+.transferRoomInfo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.transferRoomName { font-size: 13.5px; font-weight: 500; color: var(--text-primary); }
+.transferRoomCap { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+
+/* ─── Footer ─────────────────────────────────── */
+
+.formFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.footerSpacer { flex: 1; }
+
+/* ─── Banners ────────────────────────────────── */
+
+.errorBanner {
+  font-size: 13px;
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid var(--border-error);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  line-height: 1.4;
+}
+
+.successBanner {
+  font-size: 13px;
+  color: oklch(45% 0.155 155);
+  background: oklch(96% 0.020 155);
+  border: 1px solid oklch(88% 0.040 155);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* ─── Buttons ────────────────────────────────── */
+
+.btnPrimary {
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-on-accent);
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btnPrimary:hover:not(:disabled) { background: var(--accent-hover); }
+.btnPrimary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btnGhost {
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btnGhost:hover:not(:disabled) { background: var(--bg); }
+.btnGhost:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btnDanger {
+  height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--error);
+  background: transparent;
+  border: 1px solid var(--border-error);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btnDanger:hover:not(:disabled) { background: var(--error-bg); }
+.btnDanger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ─── Spinner ────────────────────────────────── */
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid oklch(99% 0.004 264 / 0.35);
+  border-top-color: var(--text-on-accent);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+.spinnerDark {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--border);
+  border-top-color: var(--text-secondary);
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Dialog ─────────────────────────────────── */
+
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.40);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.dialog {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 24px oklch(0% 0 0 / 0.12);
+  padding: 24px;
+  width: 100%;
+  max-width: 380px;
+  animation: popIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dialogTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.dialogText {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}

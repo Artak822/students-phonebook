@@ -38,15 +38,29 @@ export function DashboardShell({ children }: Props) {
         </div>
 
         <nav className={styles.nav}>
-          <div className={styles.navSection}>Главное</div>
+          {hasPermission(me, "employees:view") && (
+            <Link
+              href="/students"
+              className={`${styles.navItem} ${pathname.startsWith("/students") ? styles.active : ""}`}
+            >
+              <IconPerson className={styles.navIcon} />
+              Студенты
+            </Link>
+          )}
 
-          <Link
-            href="/dashboard"
-            className={`${styles.navItem} ${pathname === "/dashboard" ? styles.active : ""}`}
-          >
-            <IconHome className={styles.navIcon} />
-            Главная
-          </Link>
+          {hasPermission(me, "rooms:view") && (
+            <Link
+              href="/rooms"
+              className={`${styles.navItem} ${pathname.startsWith("/rooms") ? styles.active : ""}`}
+            >
+              <IconDoor className={styles.navIcon} />
+              Комнаты
+            </Link>
+          )}
+
+          {(hasPermission(me, "admins:manage") || hasPermission(me, "roles:manage")) && (
+            <div className={styles.navDivider} />
+          )}
 
           {hasPermission(me, "admins:manage") && (
             <Link
@@ -66,32 +80,6 @@ export function DashboardShell({ children }: Props) {
               <IconShield className={styles.navIcon} />
               Роли
             </Link>
-          )}
-
-          <div className={styles.navSection} style={{ marginTop: 8 }}>Работа</div>
-
-          {hasPermission(me, "employees:view") && (
-            <span className={`${styles.navItem}`} style={{ opacity: 0.45, cursor: "default" }}>
-              <IconPerson className={styles.navIcon} />
-              Жильцы
-            </span>
-          )}
-
-          {hasPermission(me, "rooms:view") && (
-            <Link
-              href="/rooms"
-              className={`${styles.navItem} ${pathname.startsWith("/rooms") ? styles.active : ""}`}
-            >
-              <IconDoor className={styles.navIcon} />
-              Комнаты
-            </Link>
-          )}
-
-          {hasPermission(me, "history:view") && (
-            <span className={`${styles.navItem}`} style={{ opacity: 0.45, cursor: "default" }}>
-              <IconHistory className={styles.navIcon} />
-              История
-            </span>
           )}
         </nav>
 
