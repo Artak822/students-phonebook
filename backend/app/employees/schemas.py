@@ -134,6 +134,7 @@ class HistoryEntry(BaseModel):
     id: int
     employee_id: int
     admin_id: int | None
+    admin_fio: str | None = None
     action: str
     field_name: str | None
     old_value: str | None

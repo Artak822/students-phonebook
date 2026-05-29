@@ -58,7 +58,7 @@
 .filterSearch::placeholder { color: var(--text-muted); }
 .filterSearch:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .filterSelect {
@@ -81,7 +81,7 @@
 
 .filterSelect:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 /* ─── Table ──────────────────────────────────── */
@@ -91,6 +91,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
+  box-shadow: var(--shadow-panel);
 }
 
 .table {
@@ -126,7 +127,7 @@
 }
 
 .table tbody tr:hover {
-  background: oklch(97.5% 0.005 255);
+  background: var(--surface-muted);
 }
 
 .table tbody td {
@@ -167,7 +168,7 @@
 }
 
 .iconBtn:hover {
-  background: var(--bg);
+  background: var(--surface-muted);
   color: var(--text-secondary);
 }
 
@@ -226,7 +227,7 @@
 }
 
 .btnGhost:hover:not(:disabled) {
-  background: var(--bg);
+  background: var(--surface-muted);
 }
 
 .btnDanger {
@@ -282,7 +283,7 @@
 .skeletonBar {
   height: 12px;
   border-radius: 6px;
-  background: oklch(92% 0.007 255);
+  background: var(--surface-muted);
   animation: shimmer 1.4s ease infinite;
 }
 
@@ -359,7 +360,7 @@
 }
 
 .panelClose:hover {
-  background: var(--bg);
+  background: var(--surface-muted);
   color: var(--text-secondary);
 }
 
@@ -421,7 +422,7 @@
 
 .input:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .inputError {
@@ -463,7 +464,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 24px oklch(0% 0 0 / 0.12);
+  box-shadow: var(--shadow-dialog);
   padding: 24px;
   width: 100%;
   max-width: 380px;

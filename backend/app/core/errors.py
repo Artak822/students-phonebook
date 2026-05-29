@@ -113,6 +113,24 @@ class RoleInUse(APIError):
     message = "Роль назначена администраторам и не может быть удалена"
 
 
+class IllnessNotFound(APIError):
+    code = "ILLNESS_NOT_FOUND"
+    http_status = 404
+    message = "Болезнь не найдена"
+
+
+class ActiveIllnessNotFound(APIError):
+    code = "ILLNESS_NOT_FOUND"
+    http_status = 404
+    message = "Активная болезнь не найдена"
+
+
+class AlreadySick(APIError):
+    code = "ALREADY_SICK"
+    http_status = 409
+    message = "Студент уже болеет"
+
+
 class PhoneAlreadyExists(APIError):
     code = "PHONE_ALREADY_EXISTS"
     http_status = 409

@@ -8,6 +8,7 @@ import { getRoom, updateRoom, deleteRoom, getRoomStudents, listRooms } from "@/l
 import { listEmployees, assignRoom, photoUrl } from "@/lib/api/employees";
 import { HttpError } from "@/lib/api/client";
 import { useMe, hasPermission } from "@/lib/hooks/useMe";
+import { useToast } from "@/lib/toast";
 import s from "./room-card.module.css";
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -21,6 +22,7 @@ export default function RoomCardPage({ params }: Props) {
   const router = useRouter();
   const qc = useQueryClient();
   const { data: me } = useMe();
+  const toast = useToast();
 
   const canManage = hasPermission(me, "rooms:manage");
 
@@ -140,6 +142,13 @@ export default function RoomCardPage({ params }: Props) {
       if (vars.targetRoomId !== null && vars.targetRoomId !== roomId) {
         qc.invalidateQueries({ queryKey: ["room-students", vars.targetRoomId] });
       }
+      if (vars.targetRoomId === null) {
+        toast.success("Жилец выселен");
+      } else if (vars.targetRoomId === roomId) {
+        toast.success("Жилец добавлен");
+      } else {
+        toast.success("Жилец переселён");
+      }
       setAddMode(false);
       setAddSearch("");
       setAddSearchDebounced("");
@@ -155,11 +164,15 @@ export default function RoomCardPage({ params }: Props) {
     onError: (err: unknown, vars) => {
       const isRoomFull = err instanceof HttpError && err.body.code === "ROOM_FULL";
       if (vars.targetRoomId === null) {
-        // evict — no error expected but handle
+        toast.error("Не удалось выселить жильца.");
       } else if (vars.targetRoomId === roomId) {
-        setAddError(isRoomFull ? "Комната заполнена." : "Не удалось добавить жильца.");
+        const msg = isRoomFull ? "Комната заполнена." : "Не удалось добавить жильца.";
+        setAddError(msg);
+        toast.error(msg);
       } else {
-        setTransferError(isRoomFull ? "Выбранная комната заполнена." : "Не удалось переселить.");
+        const msg = isRoomFull ? "Выбранная комната заполнена." : "Не удалось переселить.";
+        setTransferError(msg);
+        toast.error(msg);
       }
     },
   });
@@ -189,13 +202,14 @@ export default function RoomCardPage({ params }: Props) {
       setEditMode(false);
       setSavedOk(true);
       setTimeout(() => setSavedOk(false), 3000);
+      toast.success("Изменения сохранены");
     },
     onError: (err: unknown) => {
-      setSaveError(
-        err instanceof HttpError && err.body.code === "ROOM_DUPLICATE"
-          ? "Комната с таким адресом уже существует."
-          : "Не удалось сохранить."
-      );
+      const msg = err instanceof HttpError && err.body.code === "ROOM_DUPLICATE"
+        ? "Комната с таким адресом уже существует."
+        : "Не удалось сохранить.";
+      setSaveError(msg);
+      toast.error(msg);
     },
   });
 
@@ -203,8 +217,10 @@ export default function RoomCardPage({ params }: Props) {
     mutationFn: () => deleteRoom(roomId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["rooms"] });
+      toast.success("Комната удалена");
       router.push("/rooms");
     },
+    onError: () => toast.error("Не удалось удалить комнату."),
   });
 
   function handleSubmit(e: React.FormEvent) {
@@ -297,6 +313,7 @@ export default function RoomCardPage({ params }: Props) {
 
           {/* Left: room details */}
           <div className={s.leftCol}>
+          <div className={s.leftPanel}>
             <div className={s.section}>
               <div className={s.sectionTitle}>Параметры</div>
               {editMode ? (
@@ -382,6 +399,8 @@ export default function RoomCardPage({ params }: Props) {
               </div>
             </div>
 
+          </div>{/* /leftPanel */}
+
             {/* Footer */}
             {editMode && (
               <div className={s.formFooter}>
@@ -408,6 +427,7 @@ export default function RoomCardPage({ params }: Props) {
 
           {/* Right: residents */}
           <div className={s.rightCol}>
+          <div className={s.rightPanel}>
             <div className={s.section}>
               <div className={s.sectionTitleRow}>
                 <div className={s.sectionTitle}>Жильцы</div>
@@ -561,6 +581,7 @@ export default function RoomCardPage({ params }: Props) {
                 </div>
               )}
             </div>
+          </div>{/* /rightPanel */}
           </div>
 
         </div>

@@ -1,20 +1,23 @@
 .root {
   display: flex;
   min-height: 100vh;
+  background: var(--bg);
 }
 
 /* ─── Sidebar ─────────────────────────────── */
 
 .sidebar {
-  width: 220px;
+  width: 240px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: oklch(97.8% 0.008 258);
-  border-right: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  margin: 12px 0 12px 12px;
+  height: calc(100vh - 24px);
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 12px;
   overflow-y: auto;
 }
 
@@ -49,8 +52,8 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  height: 34px;
-  padding: 0 10px;
+  height: 36px;
+  padding: 0 12px;
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   font-weight: 450;
@@ -66,18 +69,18 @@
 }
 
 .navItem:hover {
-  background: oklch(94% 0.010 258);
+  background: oklch(96.5% 0.008 222);
   color: var(--text-primary);
 }
 
 .navItem.active {
-  background: oklch(91% 0.020 264);
-  color: oklch(38% 0.145 264);
+  background: var(--accent-bg);
+  color: var(--accent-text);
   font-weight: 500;
 }
 
 .navItem.active .navIcon {
-  color: oklch(48% 0.180 264);
+  color: var(--accent-text);
 }
 
 .navIcon {
@@ -110,11 +113,11 @@
 }
 
 .userAvatar {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: oklch(91% 0.020 264);
-  color: oklch(42% 0.140 264);
+  background: var(--accent-bg);
+  color: var(--accent-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,7 +169,7 @@
 }
 
 .logoutBtn:hover {
-  background: oklch(94% 0.010 258);
+  background: oklch(96.5% 0.008 222);
   color: var(--error);
 }
 

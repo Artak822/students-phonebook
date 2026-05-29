@@ -46,6 +46,7 @@ export interface HistoryEntry {
   id: number;
   employee_id: number;
   admin_id: number | null;
+  admin_fio: string | null;
   action: "create" | "update" | "delete";
   field_name: string | null;
   old_value: string | null;

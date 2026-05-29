@@ -9,6 +9,7 @@ import { listRoles, createRole, updateRole, deleteRole } from "@/lib/api/roles";
 import type { RoleRead } from "@/lib/api/types";
 import { ALL_PERMISSIONS, PERMISSION_LABEL } from "@/lib/api/types";
 import { HttpError } from "@/lib/api/client";
+import { useToast } from "@/lib/toast";
 import s from "./roles.module.css";
 
 // ─── Schemas ───────────────────────────────────────────────────────────
@@ -37,6 +38,7 @@ type EditForm = z.infer<typeof editSchema>;
 
 export default function RolesPage() {
   const qc = useQueryClient();
+  const toast = useToast();
 
   const [panel, setPanel] = useState<"create" | "edit" | null>(null);
   const [editTarget, setEditTarget] = useState<RoleRead | null>(null);
@@ -63,13 +65,14 @@ export default function RolesPage() {
       qc.invalidateQueries({ queryKey: ["roles"] });
       setPanel(null);
       createForm.reset();
+      toast.success("Роль создана");
     },
     onError: (err: unknown) => {
-      setCreateError(
-        err instanceof HttpError && err.body.code === "ROLE_ALREADY_EXISTS"
-          ? "Роль с таким идентификатором уже существует."
-          : "Не удалось создать роль."
-      );
+      const msg = err instanceof HttpError && err.body.code === "ROLE_ALREADY_EXISTS"
+        ? "Роль с таким идентификатором уже существует."
+        : "Не удалось создать роль.";
+      setCreateError(msg);
+      toast.error(msg);
     },
   });
 
@@ -86,8 +89,12 @@ export default function RolesPage() {
       qc.invalidateQueries({ queryKey: ["roles"] });
       setPanel(null);
       setEditTarget(null);
+      toast.success("Роль обновлена");
     },
-    onError: () => setEditError("Не удалось сохранить изменения."),
+    onError: () => {
+      setEditError("Не удалось сохранить изменения.");
+      toast.error("Не удалось сохранить изменения.");
+    },
   });
 
   const openEdit = (role: RoleRead) => {
@@ -108,10 +115,9 @@ export default function RolesPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["roles"] });
       setDeleteTarget(null);
+      toast.success("Роль удалена");
     },
-    onError: () => {
-      // error message is shown inline in the dialog
-    },
+    onError: () => toast.error("Не удалось удалить роль."),
   });
 
   // ─── Render ───────────────────────────────────────────────────────────

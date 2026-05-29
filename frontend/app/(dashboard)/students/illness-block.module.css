@@ -394,7 +394,7 @@
 .dialogInput:focus,
 .dialogSelect:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .dialogTextarea {
@@ -414,7 +414,7 @@
 }
 .dialogTextarea:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .dialogActions {
@@ -550,7 +550,7 @@
 }
 .editRoomSelect:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .editRoomSave {

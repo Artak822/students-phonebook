@@ -16,6 +16,7 @@ import { listRoles } from "@/lib/api/roles";
 import type { AdminRead, AdminCreateResponse } from "@/lib/api/types";
 import { HttpError } from "@/lib/api/client";
 import { useMe } from "@/lib/hooks/useMe";
+import { useToast } from "@/lib/toast";
 import s from "./admins.module.css";
 
 const LIMIT = 20;
@@ -43,6 +44,7 @@ type EditForm = z.infer<typeof editSchema>;
 export default function AdminsPage() {
   const { data: me } = useMe();
   const qc = useQueryClient();
+  const toast = useToast();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -86,13 +88,14 @@ export default function AdminsPage() {
       setPanel(null);
       createForm.reset();
       setCreatedPassword({ fio: result.fio, password: result.generated_password });
+      toast.success("Администратор создан");
     },
     onError: (err: unknown) => {
-      setCreateError(
-        err instanceof HttpError && err.body.code === "USERNAME_ALREADY_EXISTS"
-          ? "Это имя пользователя уже занято."
-          : "Не удалось создать администратора."
-      );
+      const msg = err instanceof HttpError && err.body.code === "USERNAME_ALREADY_EXISTS"
+        ? "Это имя пользователя уже занято."
+        : "Не удалось создать администратора.";
+      setCreateError(msg);
+      toast.error(msg);
     },
   });
 
@@ -109,8 +112,12 @@ export default function AdminsPage() {
       qc.invalidateQueries({ queryKey: ["admins"] });
       setPanel(null);
       setEditTarget(null);
+      toast.success("Изменения сохранены");
     },
-    onError: () => setEditError("Не удалось сохранить изменения."),
+    onError: () => {
+      setEditError("Не удалось сохранить изменения.");
+      toast.error("Не удалось сохранить изменения.");
+    },
   });
 
   const openEdit = useCallback((admin: AdminRead) => {
@@ -127,7 +134,9 @@ export default function AdminsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admins"] });
       setDeleteTarget(null);
+      toast.success("Администратор удалён");
     },
+    onError: () => toast.error("Не удалось удалить администратора."),
   });
 
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -139,7 +148,9 @@ export default function AdminsPage() {
     onSuccess: (result) => {
       setResetTarget(null);
       setResetPassword(result.generated_password);
+      toast.info("Пароль сброшен");
     },
+    onError: () => toast.error("Не удалось сбросить пароль."),
   });
 
   // ─── Copy helper ──────────────────────────────────────────────────────
