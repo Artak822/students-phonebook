@@ -1,3 +1,4 @@
+import io
 import re
 from datetime import datetime, timezone
 
@@ -414,6 +415,147 @@ async def delete_illness(db: AsyncSession, emp_id: int, illness_id: int) -> None
         await db.delete(note)
     await db.delete(illness)
     await db.flush()
+
+
+async def export_employees_xlsx(
+    db: AsyncSession,
+    search: str | None,
+    group_id: int | None,
+    building: int | None,
+    entrance: int | None,
+    room_id: int | None,
+    sick: bool | None,
+) -> io.BytesIO:
+    import openpyxl
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.utils import get_column_letter
+
+    q = select(Employee).where(Employee.deleted_at.is_(None))
+
+    if search:
+        phone_digits = re.sub(r"\D", "", search)
+        if phone_digits and len(phone_digits) >= 4:
+            normalized = phone_digits
+            if len(phone_digits) == 11 and phone_digits[0] in ("7", "8"):
+                normalized = "7" + phone_digits[1:]
+            q = q.where(
+                Employee.fio.ilike(f"%{search}%") | Employee.phone.ilike(f"%{normalized}%")
+            )
+        else:
+            q = q.where(Employee.fio.ilike(f"%{search}%"))
+
+    if group_id is not None:
+        q = q.where(Employee.group_id == group_id)
+    if building is not None:
+        room_ids_q = select(Room.id).where(Room.building == building)
+        if entrance is not None:
+            room_ids_q = room_ids_q.where(Room.entrance == entrance)
+        room_ids_result = await db.execute(room_ids_q)
+        room_ids_list = [r for (r,) in room_ids_result.all()]
+        q = q.where(Employee.room_id.in_(room_ids_list))
+    elif entrance is not None:
+        room_ids_q = select(Room.id).where(Room.entrance == entrance)
+        room_ids_result = await db.execute(room_ids_q)
+        room_ids_list = [r for (r,) in room_ids_result.all()]
+        q = q.where(Employee.room_id.in_(room_ids_list))
+    if room_id is not None:
+        q = q.where(Employee.room_id == room_id)
+    if sick is True:
+        sick_ids_q = select(EmployeeIllness.employee_id).where(EmployeeIllness.end_date.is_(None))
+        q = q.where(Employee.id.in_(sick_ids_q))
+
+    q = q.order_by(Employee.fio)
+    result = await db.execute(q)
+    employees = list(result.scalars().all())
+
+    # Resolve group names
+    group_ids = {e.group_id for e in employees}
+    group_map: dict[int, str] = {}
+    if group_ids:
+        from app.groups.models import Group
+        gr = await db.execute(select(Group.id, Group.name).where(Group.id.in_(group_ids)))
+        group_map = {r.id: r.name for r in gr.all()}
+
+    # Resolve room labels
+    r_ids = {e.room_id for e in employees if e.room_id}
+    room_map: dict[int, str] = {}
+    if r_ids:
+        rr = await db.execute(
+            select(Room.id, Room.building, Room.entrance, Room.room_number).where(Room.id.in_(r_ids))
+        )
+        room_map = {r.id: f"{r.building}-{r.entrance}-{r.room_number}" for r in rr.all()}
+
+    # Resolve sick status
+    sick_ids: set[int] = set()
+    if employees:
+        emp_ids = [e.id for e in employees]
+        sick_q = select(EmployeeIllness.employee_id).where(
+            EmployeeIllness.employee_id.in_(emp_ids),
+            EmployeeIllness.end_date.is_(None),
+        )
+        sk = await db.execute(sick_q)
+        sick_ids = {r for (r,) in sk.all()}
+
+    # Build workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Студенты"
+
+    HEADERS = ["№", "ФИО", "Группа", "Дата рождения", "Комната", "Телефон", "Заметки", "На больничном"]
+    COL_WIDTHS = [5, 36, 18, 16, 14, 18, 30, 14]
+
+    header_fill = PatternFill("solid", fgColor="2C4A6E")
+    header_font = Font(bold=True, color="FFFFFF", size=11)
+    thin = Side(style="thin", color="D0D8E4")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    center = Alignment(horizontal="center", vertical="center")
+    wrap = Alignment(wrap_text=True, vertical="top")
+
+    for col_idx, (header, width) in enumerate(zip(HEADERS, COL_WIDTHS), 1):
+        cell = ws.cell(row=1, column=col_idx, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.border = border
+        cell.alignment = center
+        ws.column_dimensions[get_column_letter(col_idx)].width = width
+
+    ws.row_dimensions[1].height = 22
+
+    alt_fill = PatternFill("solid", fgColor="F4F6FA")
+
+    for row_idx, emp in enumerate(employees, 2):
+        is_alt = row_idx % 2 == 0
+        row_fill = PatternFill("solid", fgColor="F4F6FA") if is_alt else None
+        bd = emp.birth_date
+        bd_str = f"{bd.day:02d}.{bd.month:02d}.{bd.year}" if bd else ""
+
+        values = [
+            row_idx - 1,
+            emp.fio,
+            group_map.get(emp.group_id, ""),
+            bd_str,
+            room_map.get(emp.room_id, "") if emp.room_id else "",
+            emp.phone,
+            emp.notes or "",
+            "Да" if emp.id in sick_ids else "Нет",
+        ]
+
+        for col_idx, val in enumerate(values, 1):
+            cell = ws.cell(row=row_idx, column=col_idx, value=val)
+            cell.border = border
+            cell.alignment = wrap if col_idx == 7 else (center if col_idx in (1, 8) else Alignment(vertical="top"))
+            if row_fill:
+                cell.fill = row_fill
+
+        ws.row_dimensions[row_idx].height = 18
+
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = f"A1:{get_column_letter(len(HEADERS))}1"
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    return buf
 
 
 async def recover_illness(

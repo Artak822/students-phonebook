@@ -58,6 +58,16 @@ export function DashboardShell({ children }: Props) {
             </Link>
           )}
 
+          {hasPermission(me, "employees:view") && (
+            <Link
+              href="/export"
+              className={`${styles.navItem} ${pathname.startsWith("/export") ? styles.active : ""}`}
+            >
+              <IconDownload className={styles.navIcon} />
+              Экспорт
+            </Link>
+          )}
+
           {(hasPermission(me, "admins:manage") || hasPermission(me, "roles:manage")) && (
             <div className={styles.navDivider} />
           )}
@@ -164,6 +174,15 @@ function IconHistory({ className }: { className?: string }) {
     <svg className={className} viewBox="0 0 16 16" fill="none" aria-hidden>
       <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.25" />
       <path d="M8 5v3.5l2.5 1.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconDownload({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2.5 12.5h11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
     </svg>
   );
 }

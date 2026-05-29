@@ -37,6 +37,38 @@ async def create_employee(
     return emp
 
 
+@router.get("/export")
+async def export_employees(
+    search: str | None = None,
+    group_id: int | None = None,
+    building: int | None = None,
+    entrance: int | None = None,
+    room_id: int | None = None,
+    sick: bool | None = None,
+    db: AsyncSession = Depends(get_db),
+    _=Depends(require_permission("employees:view")),
+):
+    from urllib.parse import quote
+    from datetime import date
+
+    buf = await service.export_employees_xlsx(
+        db,
+        search=search,
+        group_id=group_id,
+        building=building,
+        entrance=entrance,
+        room_id=room_id,
+        sick=sick,
+    )
+    filename = f"students_{date.today().isoformat()}.xlsx"
+    encoded = quote(filename)
+    return StreamingResponse(
+        buf,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded}"},
+    )
+
+
 @router.get("/{emp_id}", response_model=schemas.EmployeeRead)
 async def get_employee(
     emp_id: int,
