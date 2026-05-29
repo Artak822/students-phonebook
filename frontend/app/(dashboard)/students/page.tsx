@@ -14,7 +14,7 @@ function incompleteFields(emp: { photo_url: string | null; room_id: number | nul
   const missing: string[] = [];
   if (!emp.photo_url) missing.push("фото");
   if (!emp.room_id) missing.push("комната");
-  if (!emp.contacts?.trim()) missing.push("контакты");
+  if (!emp.contacts?.trim()) missing.push("законные представители");
   return missing;
 }
 

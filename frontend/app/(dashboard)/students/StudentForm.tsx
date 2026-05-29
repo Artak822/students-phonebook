@@ -508,7 +508,7 @@ export default function StudentForm({ empId }: Props) {
       const missing: string[] = [];
       if (!photoFile && !result.photo_url) missing.push("фото");
       if (!result.room_id) missing.push("комната");
-      if (!serializeContacts(reps)) missing.push("контакты представителей");
+      if (!serializeContacts(reps)) missing.push("законные представители");
 
       if (isNew) {
         toast.success("Студент создан");
