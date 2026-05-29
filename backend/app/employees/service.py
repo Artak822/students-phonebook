@@ -4,10 +4,20 @@ from datetime import datetime, timezone
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.errors import EmployeeNotFound, GroupNotFound, PhoneAlreadyExists, RoomFull, RoomNotFound
+from app.core.errors import (
+    ActiveIllnessNotFound,
+    AlreadySick,
+    EmployeeNotFound,
+    GroupNotFound,
+    IllnessNotFound,
+    PhoneAlreadyExists,
+    RoomFull,
+    RoomNotFound,
+)
 from app.employees import history as hist
+from app.admins.models import Admin
 from app.employees.models import Employee, EmployeeChangeHistory, EmployeeIllness, EmployeeStatement, IllnessNote
-from app.employees.schemas import EmployeeCreate, EmployeeUpdate, IllnessCreate, IllnessNoteCreate, IllnessRecover, IllnessUpdate, StatementCreate
+from app.employees.schemas import EmployeeCreate, EmployeeUpdate, HistoryEntry, IllnessCreate, IllnessNoteCreate, IllnessRecover, IllnessUpdate, StatementCreate
 from app.groups.models import Group
 from app.rooms.models import Room
 
@@ -226,14 +236,60 @@ async def delete_statement(db: AsyncSession, emp_id: int, stmt_id: int) -> None:
         await db.flush()
 
 
-async def get_history(db: AsyncSession, emp_id: int) -> list[EmployeeChangeHistory]:
+async def get_history(db: AsyncSession, emp_id: int) -> list[HistoryEntry]:
     await _get_or_404(db, emp_id)
+
     result = await db.execute(
-        select(EmployeeChangeHistory)
+        select(EmployeeChangeHistory, Admin.fio.label("admin_fio"))
+        .outerjoin(Admin, Admin.id == EmployeeChangeHistory.admin_id)
         .where(EmployeeChangeHistory.employee_id == emp_id)
         .order_by(EmployeeChangeHistory.changed_at.desc())
     )
-    return list(result.scalars().all())
+    rows = result.all()
+
+    # Collect room IDs that need to be resolved
+    room_ids: set[int] = set()
+    for row in rows:
+        h = row.EmployeeChangeHistory
+        if h.field_name == "room_id":
+            for val in (h.old_value, h.new_value):
+                if val and val.isdigit():
+                    room_ids.add(int(val))
+
+    room_labels: dict[int, str] = {}
+    if room_ids:
+        room_result = await db.execute(
+            select(Room.id, Room.building, Room.entrance, Room.room_number)
+            .where(Room.id.in_(room_ids))
+        )
+        for r in room_result.all():
+            room_labels[r.id] = f"{r.building}-{r.entrance}-{r.room_number}"
+
+    def resolve_room(val: str | None) -> str | None:
+        if not val:
+            return None
+        if val.isdigit():
+            return room_labels.get(int(val), f"комната #{val}")
+        return val
+
+    return [
+        HistoryEntry(
+            id=row.EmployeeChangeHistory.id,
+            employee_id=row.EmployeeChangeHistory.employee_id,
+            admin_id=row.EmployeeChangeHistory.admin_id,
+            admin_fio=row.admin_fio,
+            action=row.EmployeeChangeHistory.action,
+            field_name=row.EmployeeChangeHistory.field_name,
+            old_value=resolve_room(row.EmployeeChangeHistory.old_value)
+                if row.EmployeeChangeHistory.field_name == "room_id"
+                else row.EmployeeChangeHistory.old_value,
+            new_value=resolve_room(row.EmployeeChangeHistory.new_value)
+                if row.EmployeeChangeHistory.field_name == "room_id"
+                else row.EmployeeChangeHistory.new_value,
+            changed_at=row.EmployeeChangeHistory.changed_at,
+        )
+        for row in rows
+    ]
 
 
 # ── Illnesses ─────────────────────────────────────────────────────────────────
@@ -281,8 +337,7 @@ async def update_illness(db: AsyncSession, emp_id: int, illness_id: int, data: I
     )
     illness = result.scalar_one_or_none()
     if not illness:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail={"code": "ILLNESS_NOT_FOUND", "message": "Болезнь не найдена"})
+        raise IllnessNotFound()
     illness.temp_room_id = data.temp_room_id
     await db.flush()
     await _load_illness_with_notes(db, illness)
@@ -297,8 +352,7 @@ async def create_illness(db: AsyncSession, emp_id: int, data: IllnessCreate, adm
         .where(EmployeeIllness.employee_id == emp_id, EmployeeIllness.end_date.is_(None))
     )
     if existing.scalar_one_or_none():
-        from fastapi import HTTPException
-        raise HTTPException(status_code=409, detail={"code": "ALREADY_SICK", "message": "Студент уже болеет"})
+        raise AlreadySick()
 
     illness = EmployeeIllness(
         employee_id=emp_id,
@@ -332,8 +386,7 @@ async def add_illness_note(
     )
     illness = result.scalar_one_or_none()
     if not illness:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail={"code": "ILLNESS_NOT_FOUND", "message": "Болезнь не найдена"})
+        raise IllnessNotFound()
 
     note = IllnessNote(
         illness_id=illness_id,
@@ -354,8 +407,7 @@ async def delete_illness(db: AsyncSession, emp_id: int, illness_id: int) -> None
     )
     illness = result.scalar_one_or_none()
     if not illness:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail={"code": "ILLNESS_NOT_FOUND", "message": "Болезнь не найдена"})
+        raise IllnessNotFound()
     # Delete notes first
     notes = await db.execute(select(IllnessNote).where(IllnessNote.illness_id == illness_id))
     for note in notes.scalars().all():
@@ -378,8 +430,7 @@ async def recover_illness(
     )
     illness = result.scalar_one_or_none()
     if not illness:
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail={"code": "ILLNESS_NOT_FOUND", "message": "Активная болезнь не найдена"})
+        raise ActiveIllnessNotFound()
 
     illness.end_date = data.end_date
 

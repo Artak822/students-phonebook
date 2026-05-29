@@ -35,6 +35,7 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--surface);
+  box-shadow: var(--shadow-panel);
 }
 
 .roleRow {
@@ -52,7 +53,7 @@
 }
 
 .roleRow:hover {
-  background: oklch(97.5% 0.005 255);
+  background: var(--surface-muted);
 }
 
 .roleLeft {
@@ -423,7 +424,7 @@
 .input:focus,
 .textarea:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .inputError {
@@ -464,7 +465,7 @@
 }
 
 .permItem:hover {
-  background: oklch(93% 0.010 258);
+  background: oklch(93.5% 0.016 222);
 }
 
 .permItem input[type="checkbox"] {

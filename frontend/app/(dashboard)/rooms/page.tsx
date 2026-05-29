@@ -10,6 +10,7 @@ import { listRooms, createRoom, updateRoom, deleteRoom } from "@/lib/api/rooms";
 import type { RoomRead } from "@/lib/api/rooms";
 import { HttpError } from "@/lib/api/client";
 import { useMe, hasPermission } from "@/lib/hooks/useMe";
+import { useToast } from "@/lib/toast";
 import s from "./rooms.module.css";
 
 // ─── Schema ────────────────────────────────────────────────────────────
@@ -28,6 +29,7 @@ type RoomForm = z.infer<typeof roomSchema>;
 export default function RoomsPage() {
   const { data: me } = useMe();
   const qc = useQueryClient();
+  const toast = useToast();
 
   const canManage = hasPermission(me, "rooms:manage");
 
@@ -100,13 +102,14 @@ export default function RoomsPage() {
       qc.invalidateQueries({ queryKey: ["rooms"] });
       setPanel(null);
       form.reset();
+      toast.success("Комната добавлена");
     },
     onError: (err: unknown) => {
-      setFormError(
-        err instanceof HttpError && err.body.code === "ROOM_DUPLICATE"
-          ? "Комната с таким адресом уже существует."
-          : "Не удалось создать комнату."
-      );
+      const msg = err instanceof HttpError && err.body.code === "ROOM_DUPLICATE"
+        ? "Комната с таким адресом уже существует."
+        : "Не удалось создать комнату.";
+      setFormError(msg);
+      toast.error(msg);
     },
   });
 
@@ -118,13 +121,14 @@ export default function RoomsPage() {
       qc.invalidateQueries({ queryKey: ["rooms"] });
       setPanel(null);
       setEditTarget(null);
+      toast.success("Комната обновлена");
     },
     onError: (err: unknown) => {
-      setFormError(
-        err instanceof HttpError && err.body.code === "ROOM_DUPLICATE"
-          ? "Комната с таким адресом уже существует."
-          : "Не удалось сохранить изменения."
-      );
+      const msg = err instanceof HttpError && err.body.code === "ROOM_DUPLICATE"
+        ? "Комната с таким адресом уже существует."
+        : "Не удалось сохранить изменения.";
+      setFormError(msg);
+      toast.error(msg);
     },
   });
 
@@ -156,7 +160,9 @@ export default function RoomsPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["rooms"] });
       setDeleteTarget(null);
+      toast.success("Комната удалена");
     },
+    onError: () => toast.error("Не удалось удалить комнату."),
   });
 
   const onSubmit = (data: RoomForm) => {

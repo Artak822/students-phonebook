@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/lib/toast";
 import {
   listIllnesses,
   createIllness,
@@ -68,6 +70,7 @@ interface Props {
 
 export function IllnessBlock({ empId, canEdit }: Props) {
   const qc = useQueryClient();
+  const toast = useToast();
 
   // ── Dialogs ──────────────────────────────────────────────────────────────
   const [startOpen, setStartOpen] = useState(false);
@@ -131,9 +134,12 @@ export function IllnessBlock({ empId, canEdit }: Props) {
       setStartNote("");
       setStartRoomId(null);
       setStartErr(null);
+      toast.success("Болезнь зафиксирована");
     },
     onError: (err: any) => {
-      setStartErr(err?.body?.message ?? "Не удалось зафиксировать болезнь.");
+      const msg = err?.body?.message ?? "Не удалось зафиксировать болезнь.";
+      setStartErr(msg);
+      toast.error(msg);
     },
   });
 
@@ -144,8 +150,12 @@ export function IllnessBlock({ empId, canEdit }: Props) {
       setAddNoteOpen(false);
       setNoteText("");
       setNoteErr(null);
+      toast.success("Запись добавлена");
     },
-    onError: () => setNoteErr("Не удалось сохранить запись."),
+    onError: () => {
+      setNoteErr("Не удалось сохранить запись.");
+      toast.error("Не удалось сохранить запись.");
+    },
   });
 
   const updateRoomMutation = useMutation({
@@ -153,7 +163,9 @@ export function IllnessBlock({ empId, canEdit }: Props) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["illnesses", empId] });
       setEditRoomMode(false);
+      toast.success("Временная комната обновлена");
     },
+    onError: () => toast.error("Не удалось изменить временную комнату."),
   });
 
   const deleteMutation = useMutation({
@@ -162,7 +174,9 @@ export function IllnessBlock({ empId, canEdit }: Props) {
       qc.invalidateQueries({ queryKey: ["illnesses", empId] });
       qc.invalidateQueries({ queryKey: ["employees"] });
       setDeleteTarget(null);
+      toast.success("Болезнь удалена");
     },
+    onError: () => toast.error("Не удалось удалить болезнь."),
   });
 
   const recoverMutation = useMutation({
@@ -176,8 +190,12 @@ export function IllnessBlock({ empId, canEdit }: Props) {
       setRecoverOpen(false);
       setRecoverNote("");
       setRecoverErr(null);
+      toast.success("Выздоровление отмечено");
     },
-    onError: () => setRecoverErr("Не удалось отметить выздоровление."),
+    onError: () => {
+      setRecoverErr("Не удалось отметить выздоровление.");
+      toast.error("Не удалось отметить выздоровление.");
+    },
   });
 
   if (illnessesQuery.isLoading) {
@@ -354,7 +372,7 @@ export function IllnessBlock({ empId, canEdit }: Props) {
             <div className={s.dialogFields}>
               <div className={s.dialogField}>
                 <label className={s.dialogLabel}>Дата начала</label>
-                <input className={s.dialogInput} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                <DatePicker mode="date" value={startDate} onChange={setStartDate} />
               </div>
               <div className={s.dialogField}>
                 <label className={s.dialogLabel}>Временная комната</label>
@@ -399,7 +417,7 @@ export function IllnessBlock({ empId, canEdit }: Props) {
             {noteErr && <div className={s.dialogError}>{noteErr}</div>}
             <div className={s.dialogField}>
               <label className={s.dialogLabel}>Дата</label>
-              <input className={s.dialogInput} type="date" value={noteDate} onChange={(e) => setNoteDate(e.target.value)} />
+              <DatePicker mode="date" value={noteDate} onChange={setNoteDate} />
             </div>
             <div className={s.dialogField} style={{ marginBottom: 20 }}>
               <label className={s.dialogLabel}>Статус / Наблюдение</label>
@@ -450,7 +468,7 @@ export function IllnessBlock({ empId, canEdit }: Props) {
             {recoverErr && <div className={s.dialogError}>{recoverErr}</div>}
             <div className={s.dialogField}>
               <label className={s.dialogLabel}>Дата выздоровления</label>
-              <input className={s.dialogInput} type="date" value={recoverDate} onChange={(e) => setRecoverDate(e.target.value)} />
+              <DatePicker mode="date" value={recoverDate} onChange={setRecoverDate} />
             </div>
             <div className={s.dialogField} style={{ marginBottom: 20 }}>
               <label className={s.dialogLabel}>Финальная запись (необязательно)</label>

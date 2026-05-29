@@ -82,18 +82,51 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 16px 20px 20px;
+  box-shadow: var(--shadow-panel);
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
 .sectionTitle {
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+}
+
+/* ─── Unified left/right panels ──────────────── */
+
+.leftPanel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+}
+
+.leftPanel .section,
+.rightPanel .section {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 20px 24px;
+}
+
+.leftPanel .section + .section,
+.rightPanel .section + .section {
+  border-top: 1px solid var(--border);
+}
+
+.rightPanel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
 }
 
 .sectionTitleRow {
@@ -139,8 +172,8 @@
   font-size: 11.5px;
   font-weight: 500;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .statValue {
@@ -273,7 +306,7 @@
 }
 .input:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 .inputError { border-color: var(--border-error) !important; }
 
@@ -491,7 +524,7 @@
 }
 .addSearchInput:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px oklch(54% 0.19 264 / 0.12);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
 }
 
 .addDropdown {

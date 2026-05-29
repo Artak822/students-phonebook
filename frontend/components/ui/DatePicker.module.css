@@ -1,0 +1,319 @@
+/* ─── Trigger ────────────────────────────────────────── */
+
+.root {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.trigger {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  outline: none;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.trigger:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
+}
+
+.triggerOpen {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px oklch(44.0% 0.095 222 / 0.14);
+}
+
+.triggerError {
+  border-color: var(--border-error);
+}
+
+.trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.placeholder {
+  color: var(--text-muted);
+}
+
+.icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+/* ─── Popover ────────────────────────────────────────── */
+
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-dialog);
+  animation: popIn 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 280px;
+}
+
+.popoverWide {
+  min-width: 390px;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Header ─────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 0;
+}
+
+.monthLabel {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: background 0.1s, color 0.1s;
+  padding: 0;
+}
+
+.navBtn:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.navBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─── Body ───────────────────────────────────────────── */
+
+.body {
+  display: flex;
+  gap: 0;
+  padding: 10px 14px 4px;
+}
+
+/* ─── Calendar ───────────────────────────────────────── */
+
+.cal {
+  flex: 1;
+}
+
+.dowRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.dowCell {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dayBtn {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 400;
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  padding: 0;
+  line-height: 1;
+}
+
+.dayBtn:hover:not(.daySel) {
+  background: var(--surface-muted);
+}
+
+.dayOther {
+  color: var(--text-muted);
+}
+
+.dayToday:not(.daySel) {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.daySel {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 500;
+}
+
+/* ─── Time picker ────────────────────────────────────── */
+
+.time {
+  display: grid;
+  grid-template-columns: auto 1px auto;
+  grid-template-rows: auto 1fr;
+  gap: 0 0;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+}
+
+.timeLabel {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  padding-bottom: 6px;
+}
+
+.timeSep {
+  grid-row: 1 / 3;
+  grid-column: 2;
+  width: 1px;
+  background: var(--border);
+  margin: 0 4px;
+  align-self: stretch;
+}
+
+.timeCol {
+  width: 44px;
+  height: 216px; /* 6 items visible */
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: contain;
+}
+
+.timeCol::-webkit-scrollbar {
+  display: none;
+}
+
+.timepad {
+  /* padding to allow first/last items to center */
+  height: calc(216px / 2 - 18px);
+  flex-shrink: 0;
+}
+
+.timeItem {
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: background 0.1s, color 0.1s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.timeItem:hover:not(.timeItemSel) {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.timeItemSel {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+/* ─── Footer ─────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 14px 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+.footBtn {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.1s, background 0.1s;
+}
+
+.footBtn:hover {
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+}
+
+.footBtnAccent {
+  color: var(--accent);
+}
+
+.footBtnAccent:hover {
+  color: var(--accent-hover);
+  background: var(--accent-bg);
+}

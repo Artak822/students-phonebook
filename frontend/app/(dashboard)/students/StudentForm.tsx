@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/lib/toast";
+import { DatePicker } from "@/components/ui/DatePicker";
 import {
   getEmployee,
   createEmployee,
@@ -361,6 +363,7 @@ interface Props {
 export default function StudentForm({ empId }: Props) {
   const router = useRouter();
   const qc = useQueryClient();
+  const toast = useToast();
   const { data: me } = useMe();
 
   const canEdit = hasPermission(me, "employees:edit");
@@ -501,18 +504,23 @@ export default function StudentForm({ empId }: Props) {
       qc.invalidateQueries({ queryKey: ["employees"] });
       qc.invalidateQueries({ queryKey: ["employee", empId] });
       if (isNew) {
+        toast.success("Студент создан");
         router.push(`/students/${result.id}`);
       } else {
         setEditMode(false);
         setSavedOk(true);
         setTimeout(() => setSavedOk(false), 3000);
+        toast.success("Изменения сохранены");
       }
     },
     onError: (err: unknown) => {
       if (err instanceof HttpError && err.body.code === "PHONE_ALREADY_EXISTS") {
-        setSaveError("Студент с таким телефоном уже существует.");
+        const msg = "Студент с таким телефоном уже существует.";
+        setSaveError(msg);
+        toast.error(msg);
       } else {
         setSaveError("Не удалось сохранить.");
+        toast.error("Не удалось сохранить.");
       }
     },
   });
@@ -522,8 +530,10 @@ export default function StudentForm({ empId }: Props) {
     mutationFn: () => deleteEmployee(empId!),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employees"] });
+      toast.success("Студент удалён");
       router.push("/students");
     },
+    onError: () => toast.error("Не удалось удалить студента."),
   });
 
   // Room assign
@@ -535,11 +545,15 @@ export default function StudentForm({ empId }: Props) {
       await assignRoom(empId, newId);
       setRoomId(newId);
       qc.invalidateQueries({ queryKey: ["employee", empId] });
+      toast.success(newId ? "Комната назначена" : "Комната снята");
     } catch (err) {
-      if (err instanceof HttpError && err.body.code === "ROOM_FULL")
+      if (err instanceof HttpError && err.body.code === "ROOM_FULL") {
         setRoomError("Комната заполнена — нет свободных мест.");
-      else
+        toast.error("Комната заполнена — нет свободных мест.");
+      } else {
         setRoomError("Не удалось изменить комнату.");
+        toast.error("Не удалось изменить комнату.");
+      }
     }
     finally { setRoomAssigning(false); }
   }
@@ -580,8 +594,12 @@ export default function StudentForm({ empId }: Props) {
       setStmtEndInput("");
       setStmtErrors({});
       setStmtSaveError(null);
+      toast.success("Заявление добавлено");
     },
-    onError: () => setStmtSaveError("Не удалось сохранить заявление."),
+    onError: () => {
+      setStmtSaveError("Не удалось сохранить заявление.");
+      toast.error("Не удалось сохранить заявление.");
+    },
   });
 
   const stmtDeleteMutation = useMutation({
@@ -589,7 +607,9 @@ export default function StudentForm({ empId }: Props) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["statements", empId] });
       setStmtDeleteTarget(null);
+      toast.success("Заявление удалено");
     },
+    onError: () => toast.error("Не удалось удалить заявление."),
   });
 
   function formatStmtDatetime(iso: string): string {
@@ -787,6 +807,7 @@ export default function StudentForm({ empId }: Props) {
 
           {/* ── Right column: Main info + Contacts + Notes + Footer ── */}
           <div className={s.rightCol}>
+          <div className={s.rightPanel}>
 
             {/* Main info */}
             <div className={s.section}>
@@ -921,6 +942,8 @@ export default function StudentForm({ empId }: Props) {
               )}
             </div>
 
+          </div>{/* /rightPanel */}
+
             {/* Form footer */}
             {editMode && (
               <div className={s.formFooter}>
@@ -964,21 +987,21 @@ export default function StudentForm({ empId }: Props) {
             <div className={s.stmtDialogFields}>
               <div className={s.field}>
                 <label className={s.label}>Начало</label>
-                <input
-                  className={`${s.input} ${stmtErrors.start ? s.inputError : ""}`}
-                  type="datetime-local"
+                <DatePicker
+                  mode="datetime"
                   value={stmtStartInput}
-                  onChange={(e) => setStmtStartInput(e.target.value)}
+                  onChange={setStmtStartInput}
+                  hasError={!!stmtErrors.start}
                 />
                 {stmtErrors.start && <span className={s.fieldError}>{stmtErrors.start}</span>}
               </div>
               <div className={s.field}>
                 <label className={s.label}>Окончание</label>
-                <input
-                  className={`${s.input} ${stmtErrors.end ? s.inputError : ""}`}
-                  type="datetime-local"
+                <DatePicker
+                  mode="datetime"
                   value={stmtEndInput}
-                  onChange={(e) => setStmtEndInput(e.target.value)}
+                  onChange={setStmtEndInput}
+                  hasError={!!stmtErrors.end}
                 />
                 {stmtErrors.end && <span className={s.fieldError}>{stmtErrors.end}</span>}
               </div>

@@ -1,15 +1,16 @@
-/* ─── Page layout ────────────────────────────── */
+/* ─── Page ────────────────────────────────────── */
 
 .page {
   padding: 32px 40px;
   min-height: 100%;
+  max-width: 760px;
 }
 
 .pageHeader {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .backBtn {
@@ -27,9 +28,8 @@
   flex-shrink: 0;
   text-decoration: none;
 }
-
 .backBtn:hover {
-  background: var(--bg);
+  background: var(--surface-muted);
   color: var(--text-secondary);
 }
 
@@ -47,130 +47,238 @@
   margin-top: 2px;
 }
 
-/* ─── Table ──────────────────────────────────── */
+/* ─── Timeline ────────────────────────────────── */
 
-.tableWrap {
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ─── Day group ───────────────────────────────── */
+
+.dayGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 8px;
+}
+
+.dayLabel {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 16px 0 10px 48px;
+  position: relative;
+}
+
+/* vertical line through day group */
+.dayGroup::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  pointer-events: none;
+}
+
+.dayGroup {
+  position: relative;
+}
+
+/* ─── Event ───────────────────────────────────── */
+
+.event {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 0 0 4px;
+  position: relative;
+}
+
+.eventDot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  margin-top: 1px;
+  border: 1.5px solid transparent;
+}
+
+.dot_create {
+  background: oklch(96% 0.020 155);
+  color: oklch(42% 0.150 155);
+  border-color: oklch(88% 0.040 155);
+}
+
+.dot_update {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border-color: oklch(87% 0.020 222);
+}
+
+.dot_delete {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: oklch(88% 0.050 27);
+}
+
+/* ─── Event body ──────────────────────────────── */
+
+.eventBody {
+  flex: 1;
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  box-shadow: var(--shadow-panel);
+  padding: 12px 16px 14px;
+  margin-bottom: 8px;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
+.eventHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-.table thead th {
-  padding: 0 16px;
-  height: 38px;
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
+.eventAction {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
-.table tbody tr {
-  border-bottom: 1px solid var(--border);
-}
+.action_create { color: oklch(42% 0.150 155); }
+.action_update { color: var(--accent-text); }
+.action_delete { color: var(--error); }
 
-.table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.table tbody td {
-  padding: 0 16px;
-  height: 44px;
-  font-size: 13.5px;
-  color: var(--text-primary);
-  vertical-align: middle;
-}
-
-.tdField {
-  font-weight: 500;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.tdValue {
-  max-width: 200px;
-  color: var(--text-secondary);
-  font-size: 13px;
-}
-
-.tdDate {
-  white-space: nowrap;
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
-}
-
-/* ─── Action badges ──────────────────────────── */
-
-.actionBadge {
+.eventAuthor {
   display: inline-flex;
   align-items: center;
-  height: 20px;
-  padding: 0 7px;
-  font-size: 11.5px;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.eventTime {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.eventDesc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+/* ─── Changes list ────────────────────────────── */
+
+.changes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.changeRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.changeField {
   font-weight: 500;
-  border-radius: 10px;
+  color: var(--text-secondary);
+  min-width: 100px;
+  flex-shrink: 0;
+  font-size: 12.5px;
 }
 
-.action_create {
-  background: oklch(96% 0.020 155);
-  color: oklch(45% 0.155 155);
-  border: 1px solid oklch(88% 0.040 155);
+.changeOld {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: oklch(72% 0.05 27);
+  word-break: break-all;
 }
 
-.action_update {
-  background: oklch(93% 0.014 264);
-  color: oklch(40% 0.140 264);
-  border: 1px solid oklch(86% 0.025 264);
+.changeArrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0.6;
 }
 
-.action_delete {
-  background: var(--error-bg);
-  color: var(--error);
-  border: 1px solid oklch(88% 0.050 27);
+.changeNew {
+  color: var(--text-primary);
+  font-weight: 500;
+  word-break: break-all;
 }
 
-/* ─── Empty / Loading ────────────────────────── */
+/* ─── Empty ───────────────────────────────────── */
 
-.emptyState {
-  padding: 56px 24px;
+.empty {
+  padding: 64px 0;
   text-align: center;
 }
 
-.emptyStateTitle {
+.emptyTitle {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
   margin-bottom: 4px;
 }
 
-.emptyStateText {
+.emptyText {
   font-size: 13px;
   color: var(--text-muted);
 }
 
-.skeletonRow td {
-  padding: 0 16px;
-  height: 44px;
+/* ─── Skeleton ────────────────────────────────── */
+
+.skeletonEvent {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  padding-left: 0;
+}
+
+.skeletonDot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  flex-shrink: 0;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeletonCard {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
 }
 
 .skeletonBar {
-  height: 12px;
+  height: 11px;
   border-radius: 6px;
-  background: oklch(92% 0.007 255);
+  background: var(--surface-muted);
   animation: shimmer 1.4s ease infinite;
 }
 
 @keyframes shimmer {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50%       { opacity: 0.45; }
 }
