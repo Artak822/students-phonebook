@@ -503,14 +503,25 @@ export default function StudentForm({ empId }: Props) {
       }
       qc.invalidateQueries({ queryKey: ["employees"] });
       qc.invalidateQueries({ queryKey: ["employee", empId] });
+
+      // Warn about missing optional fields
+      const missing: string[] = [];
+      if (!photoFile && !result.photo_url) missing.push("фото");
+      if (!result.room_id) missing.push("комната");
+      if (!serializeContacts(reps)) missing.push("контакты представителей");
+
       if (isNew) {
         toast.success("Студент создан");
+        if (missing.length > 0)
+          toast.warning(`Не заполнено: ${missing.join(", ")}`);
         router.push(`/students/${result.id}`);
       } else {
         setEditMode(false);
         setSavedOk(true);
         setTimeout(() => setSavedOk(false), 3000);
         toast.success("Изменения сохранены");
+        if (missing.length > 0)
+          toast.warning(`Не заполнено: ${missing.join(", ")}`);
       }
     },
     onError: (err: unknown) => {
@@ -671,6 +682,11 @@ export default function StudentForm({ empId }: Props) {
     ? `${currentRoom.building}-${currentRoom.entrance}-${currentRoom.room_number}`
     : null;
 
+  // Which optional fields are empty (shown only in view mode for existing students)
+  const missingPhoto = !isNew && !editMode && !emp?.photo_url && !photoPreview;
+  const missingRoom  = !isNew && !editMode && !emp?.room_id;
+  const missingReps  = !isNew && !editMode && !emp?.contacts?.trim();
+
   if (!isNew && empQuery.isLoading) {
     return (
       <div className={s.page}>
@@ -718,8 +734,11 @@ export default function StudentForm({ empId }: Props) {
           <div className={s.leftCol}>
 
             {/* Photo */}
-            <div className={s.section}>
-              <div className={s.sectionTitle}>Фото</div>
+            <div className={`${s.section} ${missingPhoto ? s.sectionMissing : ""}`}>
+              <div className={s.sectionTitle}>
+                Фото
+                {missingPhoto && <span className={s.missingHint}>не загружено</span>}
+              </div>
               <div className={s.photoBlock}>
                 <div className={s.photoFrame}>
                   {photoPreview ? (
@@ -750,8 +769,11 @@ export default function StudentForm({ empId }: Props) {
 
             {/* Room */}
             {!isNew && (
-              <div className={s.section}>
-                <div className={s.sectionTitle}>Комната</div>
+              <div className={`${s.section} ${missingRoom ? s.sectionMissing : ""}`}>
+                <div className={s.sectionTitle}>
+                  Комната
+                  {missingRoom && <span className={s.missingHint}>не назначена</span>}
+                </div>
                 {editMode && canAssignRoom ? (
                   <div className={s.field}>
                     <RoomCombobox
@@ -923,8 +945,11 @@ export default function StudentForm({ empId }: Props) {
             )}
 
             {/* Contacts */}
-            <div className={s.section}>
-              <div className={s.sectionTitle}>Законные представители</div>
+            <div className={`${s.section} ${missingReps ? s.sectionMissing : ""}`}>
+              <div className={s.sectionTitle}>
+                Законные представители
+                {missingReps && <span className={s.missingHint}>не указаны</span>}
+              </div>
               <RepresentativesList reps={reps} onChange={setReps} editMode={editMode} />
             </div>
 

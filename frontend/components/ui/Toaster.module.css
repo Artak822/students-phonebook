@@ -76,6 +76,13 @@
 }
 .info .icon { color: var(--accent); }
 
+.warning {
+  background: oklch(97.5% 0.018 75);
+  border-color: oklch(86% 0.045 75);
+  color: oklch(36% 0.11 75);
+}
+.warning .icon { color: oklch(52% 0.15 75); }
+
 /* ── Animation ── */
 
 @keyframes slideIn {

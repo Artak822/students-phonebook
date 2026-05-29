@@ -199,7 +199,7 @@ export default function StudentsPage() {
                           {missing.length > 0 && (
                             <span
                               className={s.incompleteBadge}
-                              title={`Не заполнено: ${missing.join(", ")}`}
+                              data-tip={`Не заполнено: ${missing.join(", ")}`}
                             >
                               <IconWarning />
                               Неполный

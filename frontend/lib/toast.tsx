@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useReducer, useRef } from "reac
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ToastKind = "success" | "error" | "info";
+export type ToastKind = "success" | "error" | "info" | "warning";
 
 export interface Toast {
   id: number;
@@ -75,6 +75,7 @@ export function useToast() {
     success: (msg: string) => show("success", msg),
     error:   (msg: string) => show("error",   msg),
     info:    (msg: string) => show("info",     msg),
+    warning: (msg: string) => show("warning", msg, 5000),
     dismiss,
   };
 }
