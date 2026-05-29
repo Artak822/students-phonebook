@@ -115,6 +115,31 @@
 }
 .filterToggleActive:hover { background: oklch(93% 0.025 25); }
 
+.filterToggleIncomplete {
+  color: oklch(42% 0.13 75);
+  background: oklch(97% 0.018 75);
+  border-color: oklch(87% 0.040 75);
+}
+.filterToggleIncomplete:hover { background: oklch(94% 0.025 75); }
+
+/* ─── Incomplete badge ───────────────────────── */
+
+.incompleteBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 16px;
+  padding: 0 5px;
+  font-size: 10.5px;
+  font-weight: 500;
+  border-radius: 4px;
+  background: oklch(97% 0.018 75);
+  color: oklch(48% 0.13 75);
+  border: 1px solid oklch(88% 0.040 75);
+  white-space: nowrap;
+  width: fit-content;
+}
+
 /* ─── Table ──────────────────────────────────── */
 
 .tableWrap {
@@ -176,6 +201,12 @@
   align-items: center;
   gap: 12px;
   padding: 8px 0;
+}
+
+.fioName {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .avatar {

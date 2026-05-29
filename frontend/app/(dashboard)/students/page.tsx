@@ -10,6 +10,14 @@ import s from "./students.module.css";
 
 const LIMIT = 50;
 
+function incompleteFields(emp: { photo_url: string | null; room_id: number | null; contacts: string }): string[] {
+  const missing: string[] = [];
+  if (!emp.photo_url) missing.push("фото");
+  if (!emp.room_id) missing.push("комната");
+  if (!emp.contacts?.trim()) missing.push("контакты");
+  return missing;
+}
+
 function calcAge(birthDate: string): number {
   const today = new Date();
   const bd = new Date(birthDate);
@@ -34,6 +42,7 @@ export default function StudentsPage() {
   const [groupId, setGroupId] = useState<number | undefined>(undefined);
   const [building, setBuilding] = useState<number | undefined>(undefined);
   const [sickOnly, setSickOnly] = useState(false);
+  const [incompleteOnly, setIncompleteOnly] = useState(false);
   const [page, setPage] = useState(1);
 
   // Debounce search
@@ -70,9 +79,15 @@ export default function StudentsPage() {
   });
   const sickIds: Set<number> = sickQuery.data ?? new Set();
 
-  const data = employeesQuery.data;
+  const rawData = employeesQuery.data;
   const groups = groupsQuery.data ?? [];
   const rooms = roomsQuery.data ?? [];
+
+  // Client-side incomplete filter (server returns full page, we filter locally)
+  const filteredItems = incompleteOnly
+    ? (rawData?.items ?? []).filter((e) => incompleteFields(e).length > 0)
+    : (rawData?.items ?? []);
+  const data = rawData ? { ...rawData, items: filteredItems } : undefined;
 
   return (
     <div className={s.page}>
@@ -115,6 +130,14 @@ export default function StudentsPage() {
         >
           <IconVirus />
           Больные
+        </button>
+        <button
+          type="button"
+          className={`${s.filterToggle} ${incompleteOnly ? s.filterToggleIncomplete : ""}`}
+          onClick={() => setIncompleteOnly(!incompleteOnly)}
+        >
+          <IconIncomplete />
+          Неполные
         </button>
       </div>
 
@@ -159,6 +182,7 @@ export default function StudentsPage() {
                 const isMinor = age < 18;
                 const room = rooms.find((r) => r.id === emp.room_id);
                 const group = groups.find((g) => g.id === emp.group_id);
+                const missing = incompleteFields(emp);
                 return (
                   <tr key={emp.id} onClick={() => { window.location.href = `/students/${emp.id}`; }}>
                     <td className={s.tdFio}>
@@ -170,7 +194,18 @@ export default function StudentsPage() {
                             <span className={s.avatarInitial}>{emp.fio.trim()[0] ?? "?"}</span>
                           )}
                         </div>
-                        {emp.fio}
+                        <div className={s.fioName}>
+                          {emp.fio}
+                          {missing.length > 0 && (
+                            <span
+                              className={s.incompleteBadge}
+                              title={`Не заполнено: ${missing.join(", ")}`}
+                            >
+                              <IconWarning />
+                              Неполный
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className={s.tdPhone}>{emp.phone}</td>
@@ -248,6 +283,24 @@ function IconPlus() {
   return (
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
       <path d="M6.5 1.5v10M1.5 6.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconIncomplete() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
+      <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.25" strokeDasharray="3 2" />
+      <path d="M6.5 4v3M6.5 9v.5" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconWarning() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+      <path d="M5 1.5L9 8.5H1L5 1.5Z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+      <path d="M5 4.5v2M5 7.5v.3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
     </svg>
   );
 }
