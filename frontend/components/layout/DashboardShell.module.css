@@ -22,22 +22,18 @@
 }
 
 .brand {
-  padding: 20px 16px 18px;
+  padding: 12px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.brandName {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.brandLogo {
+  display: block;
+  width: 80%;
+  height: auto;
   color: var(--text-primary);
-}
-
-.brandSub {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-  letter-spacing: 0.01em;
 }
 
 .nav {

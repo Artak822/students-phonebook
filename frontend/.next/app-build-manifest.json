@@ -1,5 +1,17 @@
 {
   "pages": {
+    "/(dashboard)/students/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/students/page.css",
+      "static/chunks/app/(dashboard)/students/page.js"
+    ],
+    "/(dashboard)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/layout.css",
+      "static/chunks/app/(dashboard)/layout.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -12,11 +24,17 @@
       "static/css/app/(dashboard)/students/[id]/page.css",
       "static/chunks/app/(dashboard)/students/[id]/page.js"
     ],
-    "/(dashboard)/layout": [
+    "/(dashboard)/roles/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(dashboard)/layout.css",
-      "static/chunks/app/(dashboard)/layout.js"
+      "static/css/app/(dashboard)/roles/page.css",
+      "static/chunks/app/(dashboard)/roles/page.js"
+    ],
+    "/(dashboard)/export/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/export/page.css",
+      "static/chunks/app/(dashboard)/export/page.js"
     ],
     "/(auth)/login/page": [
       "static/chunks/webpack.js",
@@ -29,6 +47,24 @@
       "static/chunks/main-app.js",
       "static/css/app/(auth)/layout.css",
       "static/chunks/app/(auth)/layout.js"
+    ],
+    "/(dashboard)/students/new/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/students/new/page.css",
+      "static/chunks/app/(dashboard)/students/new/page.js"
+    ],
+    "/(dashboard)/rooms/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/rooms/page.css",
+      "static/chunks/app/(dashboard)/rooms/page.js"
+    ],
+    "/(dashboard)/admins/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(dashboard)/admins/page.css",
+      "static/chunks/app/(dashboard)/admins/page.js"
     ]
   }
 }

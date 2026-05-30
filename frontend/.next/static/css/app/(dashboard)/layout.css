@@ -4,41 +4,40 @@
 .DashboardShell_root__9_igG {
   display: flex;
   min-height: 100vh;
+  background: var(--bg);
 }
 
 /* ─── Sidebar ─────────────────────────────── */
 
 .DashboardShell_sidebar__bYkE5 {
-  width: 220px;
+  width: 240px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: oklch(97.8% 0.008 258);
-  border-right: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  margin: 12px 0 12px 12px;
+  height: calc(100vh - 24px);
   position: -webkit-sticky;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: 12px;
   overflow-y: auto;
 }
 
 .DashboardShell_brand__tjuBL {
-  padding: 20px 16px 18px;
+  padding: 12px;
   border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.DashboardShell_brandName__jM0Xh {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+.DashboardShell_brandLogo__ORLyB {
+  display: block;
+  width: 80%;
+  height: auto;
   color: var(--text-primary);
-}
-
-.DashboardShell_brandSub___2PU6 {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 2px;
-  letter-spacing: 0.01em;
 }
 
 .DashboardShell_nav__Bvdin {
@@ -53,8 +52,8 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  height: 34px;
-  padding: 0 10px;
+  height: 36px;
+  padding: 0 12px;
   border-radius: var(--radius-sm);
   font-size: 13.5px;
   font-weight: 450;
@@ -70,18 +69,18 @@
 }
 
 .DashboardShell_navItem___2ruR:hover {
-  background: oklch(94% 0.010 258);
+  background: oklch(96.5% 0.008 222);
   color: var(--text-primary);
 }
 
 .DashboardShell_navItem___2ruR.DashboardShell_active___Qzbv {
-  background: oklch(91% 0.020 264);
-  color: oklch(38% 0.145 264);
+  background: var(--accent-bg);
+  color: var(--accent-text);
   font-weight: 500;
 }
 
 .DashboardShell_navItem___2ruR.DashboardShell_active___Qzbv .DashboardShell_navIcon__hw6_c {
-  color: oklch(48% 0.180 264);
+  color: var(--accent-text);
 }
 
 .DashboardShell_navIcon__hw6_c {
@@ -114,11 +113,11 @@
 }
 
 .DashboardShell_userAvatar__FInoV {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: oklch(91% 0.020 264);
-  color: oklch(42% 0.140 264);
+  background: var(--accent-bg);
+  color: var(--accent-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -170,7 +169,7 @@
 }
 
 .DashboardShell_logoutBtn__fhcuI:hover {
-  background: oklch(94% 0.010 258);
+  background: oklch(96.5% 0.008 222);
   color: var(--error);
 }
 

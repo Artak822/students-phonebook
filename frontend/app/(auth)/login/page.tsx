@@ -69,8 +69,11 @@ export default function LoginPage() {
   return (
     <div className={styles.card}>
       <div className={styles.wordmark}>
-        <h1>АСПиРС</h1>
-        <p>Система управления общежитием</p>
+        <div className={styles.logos}>
+          <img src="/aspeers.png" alt="АСПиРС" className={styles.logoAspeers} />
+          <div className={styles.logosDivider} />
+          <img src="/sirius.png" alt="Сириус" className={styles.logoSirius} />
+        </div>
       </div>
 
       <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
