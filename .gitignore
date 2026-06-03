@@ -20,6 +20,10 @@ backend/app/**/__pycache__/
 .env.*
 !.env.example
 
+# Claude / AI tooling
+.claude/
+.agents/
+.github/
 # Next.js
 frontend/.next/
 frontend/out/
