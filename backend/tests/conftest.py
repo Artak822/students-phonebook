@@ -90,7 +90,8 @@ async def super_admin(db_session: AsyncSession):
             description="",
             permissions=[
                 "employees:view", "employees:edit", "employees:delete",
-                "employees:assign_room", "rooms:view", "rooms:manage",
+                "employees:hard_delete", "employees:assign_room",
+                "rooms:view", "rooms:manage",
                 "admins:manage", "roles:manage", "history:view",
             ],
             is_system=True,

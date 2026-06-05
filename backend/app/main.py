@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -20,11 +21,48 @@ from app.employees.router import router as employees_router
 from app.core.logging import RequestLoggingMiddleware, configure_logging
 from app.core.middleware import ContentTypeMiddleware, PasswordChangeRequiredMiddleware
 
+# TTL истории изменений: удаляем записи старше 3 лет раз в сутки (ФЗ-152)
+_HISTORY_TTL_DAYS = 3 * 365
+_HISTORY_CLEANUP_INTERVAL = 24 * 3600  # секунды
+
+
+async def _history_cleanup_loop() -> None:
+    """Фоновая задача: удаляет строки employee_change_history старше TTL."""
+    import structlog
+    from datetime import datetime, timedelta, timezone
+    from sqlalchemy import delete as sa_delete
+    from app.database import AsyncSessionLocal
+    from app.employees.models import EmployeeChangeHistory
+
+    log = structlog.get_logger()
+    while True:
+        await asyncio.sleep(_HISTORY_CLEANUP_INTERVAL)
+        try:
+            cutoff = datetime.now(timezone.utc) - timedelta(days=_HISTORY_TTL_DAYS)
+            async with AsyncSessionLocal() as session:
+                result = await session.execute(
+                    sa_delete(EmployeeChangeHistory)
+                    .where(EmployeeChangeHistory.changed_at < cutoff)
+                    .returning(EmployeeChangeHistory.id)
+                )
+                deleted = len(result.fetchall())
+                await session.commit()
+            if deleted:
+                log.info("history.cleanup", deleted=deleted, cutoff=cutoff.isoformat())
+        except Exception:
+            log.exception("history.cleanup.error")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging()
+    task = asyncio.create_task(_history_cleanup_loop())
     yield
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
 
 
 app = FastAPI(title="АСПиРС CRM", version="1.0.0", lifespan=lifespan)

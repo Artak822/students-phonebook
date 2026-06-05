@@ -38,10 +38,21 @@ async def stream_object(key: str):
     """Yields chunks of the object body."""
     async with _client() as s3:
         response = await s3.get_object(Bucket=settings.S3_BUCKET, Key=key)
-        # aiobotocore StreamingBody.read() takes no size argument — read all at once
         data = await response["Body"].read()
         yield data
 
 
+async def generate_presigned_url(key: str, expires_in: int = 300) -> str:
+    """Возвращает presigned GET-URL с ограниченным временем жизни (по умолчанию 5 минут)."""
+    async with _client() as s3:
+        url = await s3.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": settings.S3_BUCKET, "Key": key},
+            ExpiresIn=expires_in,
+        )
+    return url
+
+
 def make_photo_key(emp_id: int) -> str:
-    return f"employees/{emp_id}/{uuid.uuid4()}.jpg"
+    # emp_id не включается в имя файла — только для организации префикса
+    return f"photos/{uuid.uuid4()}.jpg"

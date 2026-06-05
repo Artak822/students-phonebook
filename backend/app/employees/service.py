@@ -159,6 +159,41 @@ async def soft_delete(db: AsyncSession, emp_id: int, admin_id: int) -> None:
     await hist.record_delete(db, emp.id, admin_id)
 
 
+async def hard_delete_and_anonymize(db: AsyncSession, emp_id: int, admin_id: int) -> None:
+    """
+    Полное удаление ПДн субъекта (право на удаление, ст. 21 ФЗ-152).
+
+    1. Обнуляем все персональные поля (анонимизация).
+    2. Удаляем фото из S3.
+    3. Псевдонимизируем строки в employee_change_history.
+    4. Hard delete записи из БД.
+    """
+    from sqlalchemy import update as sa_update
+    from app.core.s3 import delete_object
+
+    # Получаем запись, в том числе уже soft-deleted
+    result = await db.execute(select(Employee).where(Employee.id == emp_id))
+    emp = result.scalar_one_or_none()
+    if not emp:
+        raise EmployeeNotFound()
+
+    # Удаляем фото из S3
+    if emp.photo_url:
+        await delete_object(emp.photo_url)
+
+    # Псевдонимизируем историю изменений
+    anon_value = f"[удалено admin_id={admin_id}]"
+    await db.execute(
+        sa_update(EmployeeChangeHistory)
+        .where(EmployeeChangeHistory.employee_id == emp_id)
+        .values(old_value=anon_value, new_value=anon_value)
+    )
+
+    # Hard delete — каскадом удалятся statements, illnesses, illness_notes
+    await db.delete(emp)
+    await db.flush()
+
+
 async def assign_room(db: AsyncSession, emp_id: int, room_id: int | None, admin_id: int) -> Employee:
     emp = await _get_or_404(db, emp_id)
 
@@ -417,6 +452,21 @@ async def delete_illness(db: AsyncSession, emp_id: int, illness_id: int) -> None
     await db.flush()
 
 
+async def log_export(db: AsyncSession, admin_id: int) -> None:
+    """Записывает факт выгрузки реестра ПДн в журнал аудита."""
+    entry = EmployeeChangeHistory(
+        employee_id=0,  # sentinel: 0 = событие уровня реестра, не конкретного студента
+        admin_id=admin_id,
+        action="export",
+        field_name="export",
+        old_value=None,
+        new_value="xlsx",
+        changed_at=datetime.now(timezone.utc),
+    )
+    db.add(entry)
+    await db.flush()
+
+
 async def export_employees_xlsx(
     db: AsyncSession,
     search: str | None,
@@ -425,6 +475,8 @@ async def export_employees_xlsx(
     entrance: int | None,
     room_id: int | None,
     sick: bool | None,
+    exported_by_id: int | None = None,
+    exported_by_fio: str | None = None,
 ) -> io.BytesIO:
     import openpyxl
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
@@ -551,6 +603,19 @@ async def export_employees_xlsx(
 
     ws.freeze_panes = "A2"
     ws.auto_filter.ref = f"A1:{get_column_letter(len(HEADERS))}1"
+
+    # Скрытый лист с атрибуцией выгрузки (watermark)
+    from datetime import datetime, timezone
+    ws_meta = wb.create_sheet(title="_meta")
+    ws_meta.sheet_state = "hidden"
+    ws_meta["A1"] = "exported_by_id"
+    ws_meta["B1"] = exported_by_id
+    ws_meta["A2"] = "exported_by_fio"
+    ws_meta["B2"] = exported_by_fio or ""
+    ws_meta["A3"] = "exported_at"
+    ws_meta["B3"] = datetime.now(timezone.utc).isoformat()
+    ws_meta["A4"] = "total_rows"
+    ws_meta["B4"] = len(employees)
 
     buf = io.BytesIO()
     wb.save(buf)

@@ -101,6 +101,6 @@ class EmployeeChangeHistory(Base):
     changed_at = Column(DateTime(timezone=True), nullable=False, server_default=text("NOW()"))
 
     __table_args__ = (
-        CheckConstraint("action IN ('create', 'update', 'delete')", name="ck_ech_action"),
+        CheckConstraint("action IN ('create', 'update', 'delete', 'export')", name="ck_ech_action"),
         Index("idx_ech_admin_id", "admin_id"),
     )

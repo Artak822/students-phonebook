@@ -46,7 +46,7 @@ async def export_employees(
     room_id: int | None = None,
     sick: bool | None = None,
     db: AsyncSession = Depends(get_db),
-    _=Depends(require_permission("employees:view")),
+    admin: Admin = Depends(require_permission("employees:view")),
 ):
     from urllib.parse import quote
     from datetime import date
@@ -59,7 +59,14 @@ async def export_employees(
         entrance=entrance,
         room_id=room_id,
         sick=sick,
+        exported_by_id=admin.id,
+        exported_by_fio=admin.fio,
     )
+
+    # Логируем факт скачивания в историю изменений
+    await service.log_export(db, admin_id=admin.id)
+    await db.commit()
+
     filename = f"students_{date.today().isoformat()}.xlsx"
     encoded = quote(filename)
     return StreamingResponse(
@@ -97,6 +104,17 @@ async def delete_employee(
     admin: Admin = Depends(require_permission("employees:delete")),
 ):
     await service.soft_delete(db, emp_id, admin.id)
+    await db.commit()
+
+
+@router.delete("/{emp_id}/hard", status_code=204)
+async def hard_delete_employee(
+    emp_id: int,
+    db: AsyncSession = Depends(get_db),
+    admin: Admin = Depends(require_permission("employees:hard_delete")),
+):
+    """Полное удаление ПДн субъекта (ст. 21 ФЗ-152). Действие необратимо. Только super_admin."""
+    await service.hard_delete_and_anonymize(db, emp_id, admin.id)
     await db.commit()
 
 
@@ -178,16 +196,16 @@ async def get_photo(
         from app.core.errors import EmployeeNotFound
         raise EmployeeNotFound(message="У студента нет фото")
 
-    key = emp.photo_url
-
+    # MinIO закрыт снаружи — стримим через бэкенд с проверкой прав.
+    # Доступ контролируется через require_permission("employees:view").
     async def _iter():
-        async for chunk in stream_object(key):
+        async for chunk in stream_object(emp.photo_url):
             yield chunk
 
     return StreamingResponse(
         _iter(),
         media_type="image/jpeg",
-        headers={"Cache-Control": "private, max-age=3600"},
+        headers={"Cache-Control": "private, max-age=300"},
     )
 
 
