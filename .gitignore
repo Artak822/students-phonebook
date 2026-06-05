@@ -24,6 +24,7 @@ backend/app/**/__pycache__/
 .claude/
 .agents/
 .github/
+.understand-anything/
 # Next.js
 frontend/.next/
 frontend/out/
