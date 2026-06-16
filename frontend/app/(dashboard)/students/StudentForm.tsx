@@ -961,6 +961,10 @@ export default function StudentForm({ empId }: Props) {
                   <textarea className={s.textarea}
                     placeholder="Дополнительная информация…"
                     value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+                  <p style={{ marginTop: 6, fontSize: 12, color: '#b45309', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span>⚠️</span>
+                    <span>Это поле не предназначено для медицинских и дисциплинарных сведений</span>
+                  </p>
                 </div>
               ) : (
                 <ViewField label="" value={notes || undefined} />

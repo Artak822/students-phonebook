@@ -26,6 +26,7 @@ async def login(
     redis: Redis,
     *,
     ip: str,
+    user_agent: str | None,
     request_id: str | None,
     username: str,
     password: str,
@@ -68,7 +69,7 @@ async def login(
 
     access_token = create_access_token(admin.id, admin.password_changed)
     refresh_raw, refresh_hash = create_refresh_token()
-    await _store_refresh(redis, admin.id, refresh_hash)
+    await _store_refresh(redis, admin.id, refresh_hash, user_agent=user_agent)
 
     await write_audit(
         db,
@@ -114,6 +115,7 @@ async def refresh_access(
     *,
     refresh_token_raw: str | None,
     ip: str | None,
+    user_agent: str | None,
     request_id: str | None,
 ) -> str:
     """Возвращает новый access_token."""
@@ -132,6 +134,18 @@ async def refresh_access(
 
     info = json.loads(data)
     admin_id = info["admin_id"]
+
+    # Проверяем device fingerprint — логируем аномалию при расхождении
+    stored_ua = info.get("user_agent")
+    if stored_ua and user_agent and stored_ua != user_agent:
+        await write_audit(
+            db,
+            "auth.refresh.ua_mismatch",
+            actor_id=admin_id,
+            ip=ip,
+            request_id=request_id,
+            details={"stored_ua": stored_ua[:120], "current_ua": (user_agent or "")[:120]},
+        )
 
     result = await db.execute(
         select(Admin)
@@ -180,10 +194,20 @@ async def change_password(
 
 # ---------- helpers ----------
 
-async def _store_refresh(redis: Redis, admin_id: int, token_hash: str) -> None:
+async def _store_refresh(
+    redis: Redis,
+    admin_id: int,
+    token_hash: str,
+    *,
+    user_agent: str | None = None,
+) -> None:
     ttl = settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 3600
     expires_at = (datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)).isoformat()
-    data = json.dumps({"admin_id": admin_id, "expires_at": expires_at})
+    data = json.dumps({
+        "admin_id": admin_id,
+        "expires_at": expires_at,
+        "user_agent": (user_agent or "")[:256],  # обрезаем до разумной длины
+    })
     await redis.set(f"refresh:{token_hash}", data, ex=ttl)
     await redis.sadd(f"admin_refresh:{admin_id}", token_hash)
     await redis.expire(f"admin_refresh:{admin_id}", ttl)

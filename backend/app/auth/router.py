@@ -42,9 +42,11 @@ async def login(
 ):
     ip = request.client.host if request.client else "unknown"
     request_id = getattr(request.state, "request_id", None)
+    user_agent = request.headers.get("user-agent")
 
     access_token, refresh_raw, must_change_password = await auth_service.login(
-        db, redis, ip=ip, request_id=request_id, username=body.username, password=body.password
+        db, redis, ip=ip, user_agent=user_agent, request_id=request_id,
+        username=body.username, password=body.password,
     )
     _set_cookies(response, access_token, refresh_raw)
     return TokenResponse(must_change_password=must_change_password)
@@ -79,9 +81,11 @@ async def refresh(
     ip = request.client.host if request.client else "unknown"
     request_id = getattr(request.state, "request_id", None)
     refresh_raw = request.cookies.get("refresh_token")
+    user_agent = request.headers.get("user-agent")
 
     new_access = await auth_service.refresh_access(
-        db, redis, refresh_token_raw=refresh_raw, ip=ip, request_id=request_id
+        db, redis, refresh_token_raw=refresh_raw, ip=ip,
+        user_agent=user_agent, request_id=request_id,
     )
     kwargs: dict = {
         "httponly": True,
